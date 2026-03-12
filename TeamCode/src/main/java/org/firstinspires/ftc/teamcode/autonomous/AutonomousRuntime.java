@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 /**
- * Defines different autonomous runtime strategies.
- * Each runtime provides both a FAR and CLOSE sequence variant.
+ * Enumeration of available autonomous strategies.
  * <p>
- * Use the MatchConfigurationWizard to select the desired runtime before the
- * match.
+ * Each enum constant represents a distinct autonomous routine (e.g., "Safe", "Aggressive").
+ * It defines how to build the sequence for both "Far" and "Close" starting positions.
+ * <p>
+ * This allows the {@link org.firstinspires.ftc.teamcode.util.Wizard} to cycle through
+ * available strategies and select the appropriate one based on the robot's starting position.
  */
 public enum AutonomousRuntime {
     DEFAULT("I have yet to make an autonomous mode.") {
@@ -30,35 +32,41 @@ public enum AutonomousRuntime {
     }
 
     /**
-     * @return Human-readable name for telemetry display
+     * Gets the human-readable name of the runtime for telemetry.
+     *
+     * @return The display name.
      */
     public String getDisplayName() {
         return displayName;
     }
 
     /**
-     * Builds the autonomous sequence for FAR starting position.
+     * Builds the autonomous sequence for the FAR starting position.
      *
-     * @return The built AutonomousSequence
+     * @return The constructed AutonomousSequence.
      */
     public abstract AutonomousSequence buildFarSequence();
 
     /**
-     * Builds the autonomous sequence for CLOSE starting position.
+     * Builds the autonomous sequence for the CLOSE starting position.
      *
-     * @return The built AutonomousSequence
+     * @return The constructed AutonomousSequence.
      */
     public abstract AutonomousSequence buildCloseSequence();
 
     /**
-     * @return true if this runtime supports FAR starting position
+     * Checks if this runtime supports the FAR starting position.
+     *
+     * @return true if supported, false otherwise.
      */
     public boolean supportsFar() {
         return true;
     }
 
     /**
-     * @return true if this runtime supports CLOSE starting position
+     * Checks if this runtime supports the CLOSE starting position.
+     *
+     * @return true if supported, false otherwise.
      */
     public boolean supportsClose() {
         return true;
@@ -67,8 +75,8 @@ public enum AutonomousRuntime {
     /**
      * Checks if this runtime supports the given starting position.
      *
-     * @param startsFar The starting position to check
-     * @return true if supported
+     * @param startsFar true for FAR position, false for CLOSE position.
+     * @return true if the position is supported.
      */
     public boolean supportsPosition(boolean startsFar) {
         return startsFar
@@ -77,9 +85,9 @@ public enum AutonomousRuntime {
     }
 
     /**
-     * Gets the next runtime in the cycle (for d-pad navigation).
+     * Gets the next runtime in the enum declaration order (cyclic).
      *
-     * @return The next runtime
+     * @return The next AutonomousRuntime.
      */
     public AutonomousRuntime next() {
         AutonomousRuntime[] values = values();
@@ -87,9 +95,9 @@ public enum AutonomousRuntime {
     }
 
     /**
-     * Gets the previous runtime in the cycle (for d-pad navigation).
+     * Gets the previous runtime in the enum declaration order (cyclic).
      *
-     * @return The previous runtime
+     * @return The previous AutonomousRuntime.
      */
     public AutonomousRuntime previous() {
         AutonomousRuntime[] values = values();
@@ -97,10 +105,12 @@ public enum AutonomousRuntime {
     }
 
     /**
-     * Gets the next runtime that supports the given position.
+     * Gets the next runtime that supports the specified starting position.
+     * <p>
+     * Skips runtimes that are incompatible with the current position setting.
      *
-     * @param startsFar The starting position that must be supported
-     * @return The next compatible runtime
+     * @param startsFar The starting position requirement.
+     * @return The next compatible AutonomousRuntime.
      */
     public AutonomousRuntime nextFor(boolean startsFar) {
         AutonomousRuntime candidate = this.next();
@@ -113,13 +123,14 @@ public enum AutonomousRuntime {
     }
 
     /**
-     * Gets the previous runtime that supports the given position.
+     * Gets the previous runtime that supports the specified starting position.
+     * <p>
+     * Skips runtimes that are incompatible with the current position setting.
      *
-     * @param startsFar The starting position that must be supported
-     * @return The previous compatible runtime
+     * @param startsFar The starting position requirement.
+     * @return The previous compatible AutonomousRuntime.
      */
-    public AutonomousRuntime previousFor(
-            boolean startsFar) {
+    public AutonomousRuntime previousFor(boolean startsFar) {
         AutonomousRuntime candidate = this.previous();
         int attempts = 0;
         while (!candidate.supportsPosition(startsFar) && attempts < values().length) {

@@ -7,15 +7,21 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.util.telemetry.LogLine;
-import org.firstinspires.ftc.teamcode.util.telemetry.Logging;
 import org.firstinspires.ftc.teamcode.util.telemetry.TextFormat;
 
+/**
+ * A test OpMode to demonstrate the capabilities of the custom telemetry and field rendering system.
+ * <p>
+ * Allows the user to move a virtual robot on the dashboard field using the gamepad and
+ * displays various formatted telemetry items.
+ */
 @TeleOp(name = "Rendering Example", group = "Tests")
 public class RenderExample extends OpMode {
 
     private Telemetry.Item dashboardItem;
     private Robot bot;
 
+    // Virtual pose for simulation
     private double poseX = 100;
     private double poseY = 77.0;
     private double poseHeading = 0.0;
@@ -23,19 +29,23 @@ public class RenderExample extends OpMode {
     @Override
     public void init() {
         bot = new Robot(hardwareMap, telemetry, gamepad1, gamepad2);
-        Logging log = new Logging(telemetry);
+        // Initialize logging (though Robot already does this, we do it here to show explicit usage if needed)
+        // In a real OpMode, use bot.log
         dashboardItem = telemetry.addData("", "");
     }
 
     @Override
     public void loop() {
+        // Simulate robot movement based on joystick input
         poseX += bot.ctrl.main.leftStickX().state() * 2.0;
         poseY -= bot.ctrl.main.leftStickY().state() * 2.0;
         poseHeading -= bot.ctrl.main.rightStickX().state() * 0.1;
 
+        // Clamp position to field boundaries (144x144 inches)
         poseX = Math.max(0, Math.min(144, poseX));
         poseY = Math.max(0, Math.min(144, poseY));
 
+        // Build the dashboard HTML content
         StringBuilder dashboardHtml = new StringBuilder();
 
         dashboardHtml.append(TextFormat.header("RAGNAROK CONTROL SUBSYSTEM_v1.0")).append("<br><br>");
@@ -62,6 +72,7 @@ public class RenderExample extends OpMode {
 
         dashboardItem.setValue(dashboardHtml.toString());
 
+        // Update the field visualization
         bot.log.update(new Pose(poseX, poseY, poseHeading));
     }
 }

@@ -14,21 +14,17 @@ import org.firstinspires.ftc.teamcode.config.MatchState;
 import java.util.function.Consumer;
 
 /**
- * Fluent builder for creating autonomous sequences.
- * Provides a clean, readable DSL for defining autonomous routines.
+ * A fluent builder API for creating {@link AutonomousSequence}s.
  * <p>
- * Example usage:
- *
+ * This class provides a readable, chainable way to define autonomous routines.
+ * It abstracts away the creation of specific {@link AutonomousAction} instances.
+ * <p>
+ * Example:
  * <pre>
- * AutonomousSequence sequence = new SequenceBuilder(matchSettings)
- * 		.moveTo(Settings.Positions.Samples.Preset1.PREP)
- * 		.startIntake()
- * 		.moveSlowlyTo(Settings.Positions.Samples.Preset1.END)
- * 		.stopIntake()
- * 		.moveCurveToVia(Settings.Positions.TeleOp.CLOSE_SHOOT,
- * 				Settings.Positions.ControlPoints.FROM_PRESET1_TO_CLOSE, "Launch")
- * 		.launch()
- * 		.build();
+ * new SequenceBuilder()
+ *     .moveTo(targetPose)
+ *     .wait(1.0)
+ *     .build();
  * </pre>
  */
 public class SequenceBuilder {
@@ -36,18 +32,18 @@ public class SequenceBuilder {
     private final AutonomousSequence sequence;
 
     /**
-     * Creates a new sequence builder.
+     * Creates a new SequenceBuilder with an empty sequence.
      */
     public SequenceBuilder() {
         this.sequence = new AutonomousSequence();
     }
 
     /**
-     * Adds a linear path action to a target pose.
+     * Adds a linear path action to the sequence.
      *
-     * @param targetPose The target pose (in BLUE alliance coordinates)
-     * @param name       Human-readable name for telemetry
-     * @return this (for method chaining)
+     * @param targetPose The target pose (in BLUE alliance coordinates).
+     * @param name       A descriptive name for the action.
+     * @return This builder instance.
      */
     public SequenceBuilder moveTo(Pose targetPose, String name) {
         sequence.addAction(new LinearPathAction(targetPose, name));
@@ -55,7 +51,10 @@ public class SequenceBuilder {
     }
 
     /**
-     * Adds a linear path action to a target pose with auto-generated name.
+     * Adds a linear path action with an auto-generated name.
+     *
+     * @param targetPose The target pose (in BLUE alliance coordinates).
+     * @return This builder instance.
      */
     public SequenceBuilder moveTo(Pose targetPose) {
         sequence.addAction(new LinearPathAction(targetPose));
@@ -63,7 +62,12 @@ public class SequenceBuilder {
     }
 
     /**
-     * Adds a splined path action to a target pose.
+     * Adds a splined path action with explicit control points.
+     *
+     * @param targetPose    The target pose (in BLUE alliance coordinates).
+     * @param name          A descriptive name for the action.
+     * @param controlPoints The control points defining the spline.
+     * @return This builder instance.
      */
     public SequenceBuilder moveSplineTo(Pose targetPose, String name, Pose... controlPoints) {
         sequence.addAction(new SplinedPathAction(targetPose, name, controlPoints));
@@ -72,6 +76,10 @@ public class SequenceBuilder {
 
     /**
      * Adds a splined path action with auto-generated control points.
+     *
+     * @param targetPose The target pose (in BLUE alliance coordinates).
+     * @param name       A descriptive name for the action.
+     * @return This builder instance.
      */
     public SequenceBuilder moveSplineTo(Pose targetPose, String name) {
         sequence.addAction(new SplinedPathAction(targetPose, name));
@@ -79,7 +87,12 @@ public class SequenceBuilder {
     }
 
     /**
-     * Adds a curve path action with control points.
+     * Adds a curved path action with explicit control points.
+     *
+     * @param targetPose    The target pose (in BLUE alliance coordinates).
+     * @param name          A descriptive name for the action.
+     * @param controlPoints The control points defining the curve.
+     * @return This builder instance.
      */
     public SequenceBuilder moveCurveTo(Pose targetPose, String name, Pose... controlPoints) {
         sequence.addAction(new CurvePathAction(targetPose, name, controlPoints));
@@ -87,7 +100,11 @@ public class SequenceBuilder {
     }
 
     /**
-     * Adds a curve path action with control points and auto-generated name.
+     * Adds a curved path action with explicit control points and an auto-generated name.
+     *
+     * @param targetPose    The target pose (in BLUE alliance coordinates).
+     * @param controlPoints The control points defining the curve.
+     * @return This builder instance.
      */
     public SequenceBuilder moveCurveTo(Pose targetPose, Pose... controlPoints) {
         sequence.addAction(new CurvePathAction(targetPose, controlPoints));
@@ -95,7 +112,12 @@ public class SequenceBuilder {
     }
 
     /**
-     * Convenience method for single control point curves.
+     * Adds a curved path action with a single control point.
+     *
+     * @param targetPose   The target pose (in BLUE alliance coordinates).
+     * @param controlPoint The single control point.
+     * @param name         A descriptive name for the action.
+     * @return This builder instance.
      */
     public SequenceBuilder moveCurveToVia(Pose targetPose, Pose controlPoint, String name) {
         sequence.addAction(CurvePathAction.withSingleControlPoint(targetPose, controlPoint, name));
@@ -103,7 +125,12 @@ public class SequenceBuilder {
     }
 
     /**
-     * Adds an end-at action to hold position at a target pose.
+     * Adds an action to hold the robot's position at the specified pose indefinitely.
+     * <p>
+     * This is typically used as the final action in a sequence.
+     *
+     * @param targetPose The pose to hold (in BLUE alliance coordinates).
+     * @return This builder instance.
      */
     public SequenceBuilder endAt(Pose targetPose) {
         Pose finalPose = MatchState.isBlue
@@ -114,10 +141,10 @@ public class SequenceBuilder {
     }
 
     /**
-     * Adds a wait action.
+     * Adds a wait action to the sequence.
      *
-     * @param seconds Duration to wait in seconds
-     * @return this (for method chaining)
+     * @param seconds The duration to wait in seconds.
+     * @return This builder instance.
      */
     public SequenceBuilder wait(double seconds) {
         sequence.addAction(new WaitAction(seconds));
@@ -125,10 +152,10 @@ public class SequenceBuilder {
     }
 
     /**
-     * Adds a custom action.
+     * Adds a custom {@link AutonomousAction} to the sequence.
      *
-     * @param action The action to add
-     * @return this (for method chaining)
+     * @param action The action to add.
+     * @return This builder instance.
      */
     public SequenceBuilder addAction(AutonomousAction action) {
         sequence.addAction(action);
@@ -136,10 +163,12 @@ public class SequenceBuilder {
     }
 
     /**
-     * Adds multiple actions that run in parallel.
+     * Adds a set of actions to run in parallel.
+     * <p>
+     * The parallel action completes when all of its child actions have completed.
      *
-     * @param actions The actions to run simultaneously
-     * @return this (for method chaining)
+     * @param actions The actions to run simultaneously.
+     * @return This builder instance.
      */
     public SequenceBuilder parallel(AutonomousAction... actions) {
         sequence.addAction(new ParallelAction(actions));
@@ -147,26 +176,13 @@ public class SequenceBuilder {
     }
 
     /**
-     * Loops a sub-sequence of actions until a specified number of seconds
-     * are left in the autonomous period.
+     * Creates a loop that repeats a sub-sequence of actions until a certain time remains.
      * <p>
-     * Example usage:
+     * Useful for maximizing cycles in the remaining autonomous period.
      *
-     * <pre>
-     * .loopUntilSecondsLeft(5, loop -> loop
-     *     .moveTo(Settings.Positions.Samples.HumanPlayerPreset.PREP)
-     *     .startPickup()
-     *     .moveTo(Settings.Positions.Samples.HumanPlayerPreset.END)
-     *     .prepLaunch()
-     *     .moveTo(Settings.Positions.TeleOp.FAR_SHOOT)
-     *     .launch()
-     * )
-     * </pre>
-     *
-     * @param secondsToLeave Number of seconds to leave remaining before exiting the
-     *                       loop
-     * @param loopBuilder    A consumer that builds the loop sequence
-     * @return this (for method chaining)
+     * @param secondsToLeave The minimum time (in seconds) that must remain to start another iteration.
+     * @param loopBuilder    A consumer that defines the sequence to be looped.
+     * @return This builder instance.
      */
     public SequenceBuilder loopUntilSecondsLeft(double secondsToLeave, Consumer<SequenceBuilder> loopBuilder) {
         SequenceBuilder subBuilder = new SequenceBuilder();
@@ -176,9 +192,9 @@ public class SequenceBuilder {
     }
 
     /**
-     * Builds the sequence.
+     * Builds and returns the final {@link AutonomousSequence}.
      *
-     * @return The completed autonomous sequence
+     * @return The constructed sequence.
      */
     public AutonomousSequence build() {
         return sequence;

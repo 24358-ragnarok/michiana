@@ -7,22 +7,38 @@ import com.pedropathing.paths.PathChain;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
 /**
- * Path action that creates a straight line path from current position to
- * target.
- * Uses BezierLine for direct, efficient movement.
+ * A path action that moves the robot in a straight line to the target pose.
+ * <p>
+ * Uses a {@link BezierLine} to generate a linear path. Heading interpolation is linear
+ * between the start and end headings.
  */
 public class LinearPathAction extends PathAction {
 
+    /**
+     * Creates a new LinearPathAction.
+     *
+     * @param targetPose The target pose in BLUE alliance coordinates.
+     * @param name       A descriptive name for the action.
+     * @param isBlue     True for BLUE alliance, false for RED.
+     */
     public LinearPathAction(Pose targetPose, String name, boolean isBlue) {
         super(targetPose, name, isBlue);
     }
 
+    /**
+     * Creates a new LinearPathAction using the global match state.
+     *
+     * @param targetPose The target pose in BLUE alliance coordinates.
+     * @param name       A descriptive name for the action.
+     */
     public LinearPathAction(Pose targetPose, String name) {
         super(targetPose, name);
     }
 
     /**
-     * Convenience constructor with auto-generated name.
+     * Creates a new LinearPathAction with a default name.
+     *
+     * @param targetPose The target pose in BLUE alliance coordinates.
      */
     public LinearPathAction(Pose targetPose) {
         super(targetPose, "LinearPath");

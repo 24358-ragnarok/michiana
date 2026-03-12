@@ -6,31 +6,46 @@ import com.bylazar.field.Style;
 import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.FollowerConstants;
-import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
-import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.ftccommon.FtcEventLoop;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.ftccommon.external.OnCreateEventLoop;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.pathing.tank.TankDrivetrain;
 import org.psilynx.psikit.ftc.autolog.PsiKitAutoLogSettings;
 
+/**
+ * Global configuration settings for the robot.
+ * <p>
+ * This class contains constants for hardware mapping, PID coefficients,
+ * pathing constraints, field dimensions, and other tunable parameters.
+ */
 public class Settings {
+    /**
+     * Configures the PsiKit AutoLog settings when the event loop is created.
+     */
+    @OnCreateEventLoop
+    public static void configure(Context context, FtcEventLoop ftcEventLoop) {
+        System.setProperty(PsiKitAutoLogSettings.PROPERTY_RLOG_PORT, Flags.DEBUG ? "5900" : "0");
+        PsiKitAutoLogSettings.enabledByDefault = Flags.DEBUG;
+        PsiKitAutoLogSettings.enableLinearByDefault = Flags.DEBUG;
+    }
+
+    /**
+     * General flags for controlling robot behavior.
+     */
     public static class Flags {
         public static final boolean DEBUG = true;
     }
 
     /**
      * PedroPathing configuration.
-     * Holds the constants for both Tank and Mecanum followers, using a common() set of parameters.
-     **/
+     * Holds the constants for both Tank and Mecanum followers.
+     */
     public static class PedroPathing {
         public static class Follower {
             private static FollowerConstants common() {
@@ -42,51 +57,41 @@ public class Settings {
                         .useSecondaryTranslationalPIDF(true);
             }
 
-            public static final FollowerConstants MECANUM =
-                    common()
-                            .forwardZeroPowerAcceleration(-37.5)
-                            .lateralZeroPowerAcceleration(-65.7)
+            public static final FollowerConstants MECANUM = common()
+                    .forwardZeroPowerAcceleration(-37.5)
+                    .lateralZeroPowerAcceleration(-65.7)
+                    .translationalPIDFCoefficients(
+                            new PIDFCoefficients(0.13, 0.001, 0.02, 0.02))
+                    .secondaryTranslationalPIDFCoefficients(
+                            new PIDFCoefficients(0.1, 0.0001, 0.02, 0.02))
+                    .headingPIDFCoefficients(
+                            new PIDFCoefficients(0.7, 0.001, 0.05, 0.03))
+                    .secondaryHeadingPIDFCoefficients(
+                            new PIDFCoefficients(1.65, 0.001, 0.015, 0.02))
+                    .drivePIDFCoefficients(
+                            new FilteredPIDFCoefficients(0.5, 0.0, 0.01, 0.6, 0.0))
+                    .secondaryDrivePIDFCoefficients(
+                            new FilteredPIDFCoefficients(0.08, 0.001, 0.001, 0.6, 0.0));
 
-                            .translationalPIDFCoefficients(
-                                    new PIDFCoefficients(0.13, 0.001, 0.02, 0.02))
-                            .secondaryTranslationalPIDFCoefficients(
-                                    new PIDFCoefficients(0.1, 0.0001, 0.02, 0.02))
-
-                            .headingPIDFCoefficients(
-                                    new PIDFCoefficients(0.7, 0.001, 0.05, 0.03))
-                            .secondaryHeadingPIDFCoefficients(
-                                    new PIDFCoefficients(1.65, 0.001, 0.015, 0.02))
-
-                            .drivePIDFCoefficients(
-                                    new FilteredPIDFCoefficients(0.5, 0.0, 0.01, 0.6, 0.0))
-                            .secondaryDrivePIDFCoefficients(
-                                    new FilteredPIDFCoefficients(0.08, 0.001, 0.001, 0.6, 0.0));
-
-            public static final FollowerConstants TANK =
-                    common()
-                            .forwardZeroPowerAcceleration(-37.5)
-                            .lateralZeroPowerAcceleration(-65.7)
-
-                            .translationalPIDFCoefficients(
-                                    new PIDFCoefficients(0.13, 0.001, 0.02, 0.02))
-                            .secondaryTranslationalPIDFCoefficients(
-                                    new PIDFCoefficients(0.1, 0.0001, 0.02, 0.02))
-
-                            .headingPIDFCoefficients(
-                                    new PIDFCoefficients(0.7, 0.001, 0.05, 0.03))
-                            .secondaryHeadingPIDFCoefficients(
-                                    new PIDFCoefficients(1.65, 0.001, 0.015, 0.02))
-
-                            .drivePIDFCoefficients(
-                                    new FilteredPIDFCoefficients(0.5, 0.0, 0.01, 0.6, 0.0))
-                            .secondaryDrivePIDFCoefficients(
-                                    new FilteredPIDFCoefficients(0.08, 0.001, 0.001, 0.6, 0.0));
+            public static final FollowerConstants TANK = common()
+                    .forwardZeroPowerAcceleration(-37.5)
+                    .lateralZeroPowerAcceleration(-65.7)
+                    .translationalPIDFCoefficients(
+                            new PIDFCoefficients(0.13, 0.001, 0.02, 0.02))
+                    .secondaryTranslationalPIDFCoefficients(
+                            new PIDFCoefficients(0.1, 0.0001, 0.02, 0.02))
+                    .headingPIDFCoefficients(
+                            new PIDFCoefficients(0.7, 0.001, 0.05, 0.03))
+                    .secondaryHeadingPIDFCoefficients(
+                            new PIDFCoefficients(1.65, 0.001, 0.015, 0.02))
+                    .drivePIDFCoefficients(
+                            new FilteredPIDFCoefficients(0.5, 0.0, 0.01, 0.6, 0.0))
+                    .secondaryDrivePIDFCoefficients(
+                            new FilteredPIDFCoefficients(0.08, 0.001, 0.001, 0.6, 0.0));
         }
 
         public static class Drive {
-
             /* ---- MECANUM ---- */
-
             private static MecanumConstants common() {
                 return new MecanumConstants()
                         .maxPower(1)
@@ -101,33 +106,28 @@ public class Settings {
                         .useBrakeModeInTeleOp(false);
             }
 
-            public static final MecanumConstants MECANUM =
-                    common()
-                            .xVelocity(86)
-                            .yVelocity(60);
-
+            public static final MecanumConstants MECANUM = common()
+                    .xVelocity(86)
+                    .yVelocity(60);
 
             /* ---- TANK ---- */
-
-            public static final MecanumConstants TANK =
-                    common()
-                            .xVelocity(86)
-                            .yVelocity(60);
+            public static final MecanumConstants TANK = common()
+                    .xVelocity(86)
+                    .yVelocity(60);
         }
 
         public static class Localizer {
-            public static final PinpointConstants PINPOINT =
-                    new PinpointConstants()
-                            .forwardPodY(-4.75)
-                            .strafePodX(-4.05)
-                            .distanceUnit(DistanceUnit.INCH)
-                            .hardwareMapName(Hardware.PINPOINT)
-                            .encoderResolution(
-                                    GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
-                            .forwardEncoderDirection(
-                                    GoBildaPinpointDriver.EncoderDirection.REVERSED)
-                            .strafeEncoderDirection(
-                                    GoBildaPinpointDriver.EncoderDirection.FORWARD);
+            public static final PinpointConstants PINPOINT = new PinpointConstants()
+                    .forwardPodY(-4.75)
+                    .strafePodX(-4.05)
+                    .distanceUnit(DistanceUnit.INCH)
+                    .hardwareMapName(Hardware.PINPOINT)
+                    .encoderResolution(
+                            GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
+                    .forwardEncoderDirection(
+                            GoBildaPinpointDriver.EncoderDirection.REVERSED)
+                    .strafeEncoderDirection(
+                            GoBildaPinpointDriver.EncoderDirection.FORWARD);
         }
 
         public static class Path {
@@ -139,8 +139,7 @@ public class Settings {
                     80,
                     1.00,
                     10,
-                    1
-            );
+                    1);
             public static PathConstraints TANK = new PathConstraints(
                     0.995,
                     0.01,
@@ -149,46 +148,27 @@ public class Settings {
                     80,
                     1.00,
                     10,
-                    1
-            );
-        }
-
-        public static class Builder {
-            public static com.pedropathing.follower.Follower mecanum(HardwareMap hardwareMap) {
-                return new FollowerBuilder(Follower.MECANUM, hardwareMap)
-                        .mecanumDrivetrain(Drive.MECANUM)
-                        .pathConstraints(Path.MECANUM)
-                        .pinpointLocalizer(Localizer.PINPOINT)
-                        .build();
-            }
-
-            public static com.pedropathing.follower.Follower tank(HardwareMap hardwareMap) {
-                PinpointLocalizer l = new PinpointLocalizer(hardwareMap, Localizer.PINPOINT);
-                TankDrivetrain t = new TankDrivetrain(hardwareMap, Drive.TANK);
-                return new com.pedropathing.follower.Follower(
-                        Follower.TANK, l, t, Path.TANK);
-            }
+                    1);
         }
     }
 
     public static class Drivetrain {
-        // Butterfly Drivetrain
+        // Butterfly Drivetrain Servo Positions
         public static double MECANUM_DOWN_POSITION = 0.2;
         public static double TANK_DOWN_POSITION = 0.6;
     }
 
     /**
-     * Simple robot measurements
-     **/
+     * Simple robot physical measurements.
+     */
     public static class Dimensions {
         public static float WIDTH = 16;
         public static float LENGTH = 16;
-
     }
 
     /**
-     * HardwareMap Names
-     **/
+     * HardwareMap device names.
+     */
     public static class Hardware {
         public static final String PINPOINT = "pinpoint";
         public static final String LEFT_FRONT_MOTOR = "leftFront";
@@ -198,21 +178,15 @@ public class Settings {
         public static final String BUTTERFLY = "butterfly";
     }
 
-    public static class Logging {
-        public static final int INTERVAL = Flags.DEBUG ? 50 : 1000;
-        public static final boolean DRAW_FIELD = Flags.DEBUG;
-        public static final Style followerLook = new Style(
-                "", "#FFD40C", 0.75
-        );
-        public static final Style robotLook = new Style(
-                "", "#4CAF50", 0.75
-        );
-    }
-
     public static class Autonomous {
         public static final double DURATION = 30;
     }
+
     public static class Positions {
+        public static class BotPoses {
+            public static Pose START_FAR = new Pose();
+            public static Pose START_CLOSE = new Pose();
+        }
         public static class TeleopPresets {
             public static final Pose CLOSE_SHOOT = new Pose(54.92, 86.55, Math.toRadians(130.6));
             public static final Pose FAR_SHOOT = new Pose(60, 18, Math.toRadians(112.75));
@@ -222,10 +196,15 @@ public class Settings {
         }
     }
 
-    @OnCreateEventLoop
-    public static void configure(Context context, FtcEventLoop ftcEventLoop) {
-        System.setProperty(PsiKitAutoLogSettings.PROPERTY_RLOG_PORT, Flags.DEBUG ? "5900" : "0");
-        PsiKitAutoLogSettings.enabledByDefault = Flags.DEBUG;
-        PsiKitAutoLogSettings.enableLinearByDefault = Flags.DEBUG;
+    /**
+     * Logging configuration.
+     */
+    public static class Logging {
+        public static final int INTERVAL = Flags.DEBUG ? 50 : 1000;
+        public static final boolean DRAW_FIELD = Flags.DEBUG;
+        public static final Style followerLook = new Style(
+                "", "#FFD40C", 0.75);
+        public static final Style robotLook = new Style(
+                "", "#4CAF50", 0.75);
     }
 }

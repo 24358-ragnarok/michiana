@@ -7,36 +7,45 @@ import com.pedropathing.paths.PathChain;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
 /**
- * Path action that creates a smooth curved path using a Bezier curve.
- * Automatically generates control points for natural movement.
+ * A path action that moves the robot along a smooth spline curve to the target pose.
+ * <p>
+ * This action can either use explicit control points or automatically generate a simple
+ * curve using a midpoint. It uses {@link BezierCurve} for smooth motion.
  */
 public class SplinedPathAction extends PathAction {
 
     private final Pose[] controlPoints;
 
     /**
-     * Creates a splined path with explicit control points.
+     * Creates a SplinedPathAction with explicit control points.
      *
-     * @param targetPose    The target pose (in BLUE alliance coordinates)
-     * @param name          Human-readable name for telemetry
-     * @param isBlue        The alliance color for automatic mirroring
-     * @param controlPoints Additional control points for the curve (in BLUE
-     *                      coordinates)
+     * @param targetPose    The target pose in BLUE alliance coordinates.
+     * @param name          A descriptive name for the action.
+     * @param isBlue        True for BLUE alliance, false for RED.
+     * @param controlPoints Intermediate control points for the curve (in BLUE coordinates).
      */
-    public SplinedPathAction(Pose targetPose, String name, boolean isBlue,
-                             Pose... controlPoints) {
+    public SplinedPathAction(Pose targetPose, String name, boolean isBlue, Pose... controlPoints) {
         super(targetPose, name, isBlue);
         this.controlPoints = controlPoints;
     }
 
+    /**
+     * Creates a SplinedPathAction with explicit control points using global match state.
+     *
+     * @param targetPose    The target pose in BLUE alliance coordinates.
+     * @param name          A descriptive name for the action.
+     * @param controlPoints Intermediate control points for the curve (in BLUE coordinates).
+     */
     public SplinedPathAction(Pose targetPose, String name, Pose... controlPoints) {
         super(targetPose, name);
         this.controlPoints = controlPoints;
     }
 
     /**
-     * Creates a splined path with auto-generated control points.
-     * The control point is placed at the midpoint between start and end.
+     * Creates a SplinedPathAction that auto-generates a control point at the midpoint.
+     *
+     * @param targetPose The target pose in BLUE alliance coordinates.
+     * @param name       A descriptive name for the action.
      */
     public SplinedPathAction(Pose targetPose, String name) {
         super(targetPose, name);
@@ -44,7 +53,9 @@ public class SplinedPathAction extends PathAction {
     }
 
     /**
-     * Convenience constructor with auto-generated name and control points.
+     * Creates a SplinedPathAction with auto-generated control point and default name.
+     *
+     * @param targetPose The target pose in BLUE alliance coordinates.
      */
     public SplinedPathAction(Pose targetPose) {
         super(targetPose, "SplinedPath");
@@ -56,7 +67,7 @@ public class SplinedPathAction extends PathAction {
         BezierCurve curve;
 
         if (controlPoints != null && controlPoints.length > 0) {
-            // Use explicit control points (mirror them if needed)
+            // Use provided control points, mirroring them if necessary
             Pose[] allPoints = new Pose[controlPoints.length + 2];
             allPoints[0] = startPose;
 
@@ -69,7 +80,7 @@ public class SplinedPathAction extends PathAction {
             allPoints[allPoints.length - 1] = endPose;
             curve = new BezierCurve(allPoints);
         } else {
-            // Auto-generate a simple curve with midpoint control
+            // Auto-generate a midpoint control point for a simple curve
             Pose midPoint = new Pose(
                     (startPose.getX() + endPose.getX()) / 2,
                     (startPose.getY() + endPose.getY()) / 2,

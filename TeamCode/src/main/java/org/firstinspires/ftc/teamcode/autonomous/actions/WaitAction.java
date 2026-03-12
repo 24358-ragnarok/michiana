@@ -6,12 +6,20 @@ import org.firstinspires.ftc.teamcode.autonomous.AutonomousAction;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
 /**
- * Action that waits for a specified duration before completing.
+ * An action that does nothing but wait for a specified duration.
+ * <p>
+ * Useful for adding delays between actions, allowing mechanisms to settle, or
+ * synchronizing with alliance partners.
  */
 public class WaitAction implements AutonomousAction {
     private final double durationSeconds;
     private Timer timer;
 
+    /**
+     * Creates a new WaitAction.
+     *
+     * @param durationSeconds The time to wait in seconds.
+     */
     public WaitAction(double durationSeconds) {
         this.durationSeconds = durationSeconds;
     }
@@ -29,7 +37,7 @@ public class WaitAction implements AutonomousAction {
 
     @Override
     public void end(Robot bot, boolean interrupted) {
-        // Nothing to clean up
+        // No cleanup needed
     }
 
     @Override

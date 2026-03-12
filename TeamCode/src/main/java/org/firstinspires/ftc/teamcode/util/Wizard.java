@@ -6,24 +6,34 @@ import org.firstinspires.ftc.teamcode.util.telemetry.LogLine;
 import org.firstinspires.ftc.teamcode.util.telemetry.TextFormat;
 
 /**
- * MatchConfigurationWizard provides an interface for configuring match settings
- * during the init_loop phase of autonomous programs.
+ * Handles the pre-match configuration process during the init_loop.
+ * <p>
+ * Allows the drive team to select:
+ * <ul>
+ *   <li>Alliance Color (Blue/Red)</li>
+ *   <li>Starting Position (Far/Close)</li>
+ *   <li>Autonomous Strategy (Runtime)</li>
+ * </ul>
+ * Inputs are handled via the gamepad, and feedback is displayed on the telemetry.
  */
 public class Wizard {
     private final Robot bot;
     private boolean confirmed = false;
 
     /**
-     * Creates a new MatchConfigurationWizard
+     * Creates a new configuration wizard.
      *
-     * @param bot the Robot
+     * @param bot The robot instance used for input and telemetry.
      */
     public Wizard(Robot bot) {
         this.bot = bot;
     }
 
     /**
-     * Call this method repeatedly in init_loop to process input and update display
+     * Updates the wizard logic. Should be called once per init_loop iteration.
+     * <p>
+     * Handles gamepad input to toggle settings and updates the telemetry display.
+     * Once confirmed, settings are locked until unlocked.
      */
     public void refresh() {
         // If settings are confirmed, only allow START to unlock; ignore other inputs
@@ -31,47 +41,49 @@ public class Wizard {
             if (bot.ctrl.main.start().onTrue()) {
                 confirmed = false;
             }
-            updateTelemetry();
+            addTelemetry();
             return;
         }
 
+        // Handle Alliance Color Selection
         if (bot.ctrl.main.b().onTrue()) {
             MatchState.isBlue = false;
         }
-
-        // Detect rising edge of dpad_down (just pressed)
         if (bot.ctrl.main.x().onTrue()) {
             MatchState.isBlue = true;
         }
 
+        // Handle Starting Position Selection
         if (bot.ctrl.main.a().onTrue()) {
-            setStartingPositionWithRuntimeCheck(false);
+            setStartingPositionWithRuntimeCheck(false); // Close
         }
-
         if (bot.ctrl.main.y().onTrue()) {
-            setStartingPositionWithRuntimeCheck(true);
+            setStartingPositionWithRuntimeCheck(true); // Far
         }
 
+        // Handle Confirmation
         if (bot.ctrl.main.start().onTrue()) {
             confirmed = !confirmed;
         }
 
-        // Cycle through runtimes with left/right d-pad (only to compatible ones)
+        // Handle Runtime Selection (cycling through compatible options)
         if (bot.ctrl.main.dpadRight().onTrue()) {
             MatchState.nextAutonomousRuntimeForCurrentPosition();
         }
-
         if (bot.ctrl.main.dpadLeft().onTrue()) {
             MatchState.previousAutonomousRuntimeForCurrentPosition();
         }
 
-        // Update telemetry display
-        updateTelemetry();
+        addTelemetry();
     }
 
     /**
-     * Sets the starting position, switching runtime if the current one doesn't
-     * support it.
+     * Sets the starting position and ensures the selected runtime is compatible.
+     * <p>
+     * If the current runtime doesn't support the new position, it automatically switches
+     * to the next available runtime that does.
+     *
+     * @param startsFar True for Far, False for Close.
      */
     private void setStartingPositionWithRuntimeCheck(boolean startsFar) {
         MatchState.setStartsFar(startsFar);
@@ -85,16 +97,15 @@ public class Wizard {
     }
 
     /**
-     * Updates telemetry with current configuration and instructions
+     * Renders the configuration menu to the telemetry.
      */
-    private void updateTelemetry() {
-        bot.log.clearDynamic();
-
+    private void addTelemetry() {
         // Header
         LogLine header = new LogLine()
                 .append(TextFormat.header("MATCH CONFIGURATION"));
         bot.log.addLine(header);
 
+        // Instructions
         if (!confirmed) {
             bot.log.addLine(new LogLine()
                     .appendBold("X/B")
@@ -123,7 +134,7 @@ public class Wizard {
 
         bot.log.addLine("");
 
-        // Current selection summary
+        // Current Settings Display
         LogLine allianceLine = new LogLine()
                 .appendBold("Alliance: ")
                 .appendColor(MatchState.isBlue ? "BLUE" : "RED",

@@ -2,6 +2,12 @@ package org.firstinspires.ftc.teamcode.util.telemetry;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+/**
+ * Renders a visual representation of the field and robot on the Driver Station telemetry.
+ * <p>
+ * Uses Braille Unicode characters to create a low-resolution pixel grid that can be
+ * displayed in the text-based telemetry log.
+ */
 public class FieldRenderer {
     private final Telemetry.Item fieldItem;
     private final int width = 73;
@@ -15,12 +21,25 @@ public class FieldRenderer {
     private final double scaleX = width / 144.0;
     private final double scaleY = height / 144.0;
 
+    /**
+     * Initializes the field renderer.
+     *
+     * @param telemetry The telemetry instance to render to.
+     */
     public FieldRenderer(Telemetry telemetry) {
         this.fieldItem = telemetry.addData("", "");
         drawStaticField();
         snapshot();
     }
 
+    /**
+     * Renders the field with the robot at the specified position.
+     *
+     * @param x       The robot's X coordinate (inches).
+     * @param y       The robot's Y coordinate (inches).
+     * @param heading The robot's heading (radians).
+     * @param color   The color of the robot indicator.
+     */
     public void render(double x, double y, double heading, String color) {
         restore();
         drawRobot(x, y, heading, color);

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pathing.tank;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.pedropathing.Drivetrain;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
@@ -13,9 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Tank (Differential) Drivetrain implementation for PedroPathing.
- * Converts holonomic pathing requests into differential kinematic commands.
- * WIP!!!
+ * A custom Drivetrain implementation for PedroPathing that supports Tank (Differential) drive.
+ * <p>
+ * This class adapts the holonomic pathing requests from PedroPathing into differential
+ * drive commands suitable for a tank drive robot.
+ * <p>
+ * Note: This is an experimental implementation.
  */
 public class TankDrivetrain extends Drivetrain {
     public MecanumConstants constants;
@@ -32,6 +35,12 @@ public class TankDrivetrain extends Drivetrain {
     // Tuning scalar for converting lateral cross-track error into rotational commands
     private final double kLateral = 1.5;
 
+    /**
+     * Initializes the Tank Drivetrain.
+     *
+     * @param hardwareMap   The hardware map.
+     * @param tankConstants The constants defining motor names and properties.
+     */
     public TankDrivetrain(HardwareMap hardwareMap, MecanumConstants tankConstants) {
         constants = tankConstants;
 
@@ -70,6 +79,18 @@ public class TankDrivetrain extends Drivetrain {
         this.staticFrictionCoefficient = constants.staticFrictionCoefficient;
     }
 
+    /**
+     * Calculates the motor powers required to follow the path.
+     * <p>
+     * Converts the holonomic corrective, heading, and pathing vectors into
+     * left and right wheel powers for a differential drive.
+     *
+     * @param correctivePower The power vector to correct position error.
+     * @param headingPower    The power vector to correct heading error.
+     * @param pathingPower    The power vector to follow the path.
+     * @param robotHeading    The current robot heading.
+     * @return An array of 4 motor powers [LF, LR, RF, RR].
+     */
     @Override
     public double[] calculateDrive(Vector correctivePower, Vector headingPower, Vector pathingPower, double robotHeading) {
         if (correctivePower.getMagnitude() > maxPowerScaling)
@@ -85,6 +106,8 @@ public class TankDrivetrain extends Drivetrain {
         double vx = globalTranslation.getMagnitude() * Math.cos(localTheta);
         double vy = globalTranslation.getMagnitude() * Math.sin(localTheta);
 
+        // In tank drive, lateral error (vy) cannot be corrected directly by strafing.
+        // We convert it into a turning command to steer back to the path.
         double turnCrossTrack = vy * kLateral;
 
         // Extract longitudinal differential demand from heading vector
@@ -93,6 +116,7 @@ public class TankDrivetrain extends Drivetrain {
         double leftPower = vx - turnHeading - turnCrossTrack;
         double rightPower = vx + turnHeading + turnCrossTrack;
 
+        // Scale up since we have 4 motors but only 2 sides
         leftPower *= 2.0;
         rightPower *= 2.0;
 

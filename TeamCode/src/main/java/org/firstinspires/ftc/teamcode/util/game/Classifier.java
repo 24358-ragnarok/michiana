@@ -5,105 +5,90 @@ import androidx.annotation.NonNull;
 import java.util.Arrays;
 
 /**
- * Stores the detected Motif and manages the sequential queue of up to 9
- * Artifacts (balls)
- * currently held by the robot for scoring.
+ * Manages the state of collected game elements (Artifacts) and the target scoring pattern (Motif).
+ * <p>
+ * This class tracks which artifacts the robot is currently holding and determines the next
+ * desired artifact color based on the identified motif.
  */
 public class Classifier {
     private static final int MAX_CAPACITY = 9;
     private final Motif motif;
-    private final Artifact[] state; // Fixed size of 9 balls max
-    private int ballCount; // Tracks the number of balls currently stored (and the next available index)
+	private final Artifact[] state; // Fixed size buffer for stored balls
+	private int ballCount; // Number of balls currently stored
 
     /**
-     * Initializes the Classifier with a determined Motif and an initial set of
-     * Artifacts.
+	 * Initializes the Classifier with a known Motif and an initial set of Artifacts.
      *
-     * @param classifierMotif The determined Motif pattern (GPP, PGP, PPG, or
-     *                        UNKNOWN).
-     * @param initial         An array of Artifacts to preload into the state.
+	 * @param classifierMotif The determined Motif pattern.
+	 * @param initial         An array of Artifacts already in the robot's possession.
      */
     public Classifier(Motif classifierMotif, Artifact[] initial) {
         this.motif = classifierMotif;
         this.state = new Artifact[MAX_CAPACITY];
         this.ballCount = 0;
 
-        // 1. Copy initial artifacts, respecting the MAX_CAPACITY limit
+		// Copy initial artifacts up to capacity
         if (initial != null) {
             int toCopy = Math.min(initial.length, MAX_CAPACITY);
-            // Ensure we copy the actual object, not just the reference (if necessary)
-            // For simplicity here, we assume the provided artifacts are ready to be stored.
             System.arraycopy(initial, 0, this.state, 0, toCopy);
             this.ballCount = toCopy;
         }
 
-        // 2. Fill the rest of the fixed array with Artifact.NONE to prevent null
-        // pointers
+		// Fill remaining slots with NONE
         for (int i = this.ballCount; i < MAX_CAPACITY; i++) {
             this.state[i] = Artifact.NONE;
         }
     }
 
     /**
-     * build a classifier with a known motif and default empty state
-     **/
+	 * Initializes the Classifier with a known Motif and no initial artifacts.
+	 *
+	 * @param classifierMotif The determined Motif pattern.
+	 */
     public Classifier(Motif classifierMotif) {
         this(classifierMotif, new Artifact[0]);
     }
 
     /**
-     * Factory method to create an empty Classifier for initial use.
-     * Initializes with an UNKNOWN motif and zero balls stored.
+	 * Creates an empty Classifier with an UNKNOWN motif.
+	 * <p>
+	 * Useful for initialization before the randomization is detected.
      *
      * @return A new, empty Classifier instance.
      */
     public static Classifier empty() {
-        // Create a temporary 9-element array initialized to NONE
         Artifact[] emptyState = new Artifact[MAX_CAPACITY];
         Arrays.fill(emptyState, Artifact.NONE);
-
-        // Pass the unknown motif and the empty state to the constructor
         Classifier emptyClassifier = new Classifier(Motif.UNKNOWN, emptyState);
-
-        // Critically, set the ballCount to 0 to indicate no balls are *active*
         emptyClassifier.ballCount = 0;
         return emptyClassifier;
     }
 
     /**
-     * Adds an artifact (ball) to the end of the sequence.
-     * The ball is placed at the index equal to the current ballCount.
+	 * Adds an artifact to the robot's storage.
      *
-     * @param ball The Artifact to add
-     * @return true if the ball was successfully added, false if the capacity is
-     * full.
+	 * @param ball The Artifact to add.
+	 * @return true if added successfully, false if storage is full.
      */
     public boolean addBall(Artifact ball) {
         if (ballCount < MAX_CAPACITY) {
-            // Add the ball at the current count index
             this.state[ballCount] = ball;
-            // Increment the count to point to the next available slot
             ballCount++;
             return true;
         }
-        return false; // Storage is full
+		return false;
     }
-
-    // --- Getters ---
 
     public Motif getMotif() {
         return motif;
     }
 
     /**
-     * Gets the current array of stored artifacts (balls).
+	 * Gets the current buffer of stored artifacts.
      *
-     * @return The full 9-element array. Check getBallCount() to know how many are
-     * active.
+	 * @return The internal array of artifacts. Note: Contains MAX_CAPACITY elements.
      */
     public Artifact[] getState() {
-        // Returning a defensive copy is usually best practice, but for FTC
-        // simplicity, we return the reference.
         return state;
     }
 
@@ -112,12 +97,12 @@ public class Classifier {
     }
 
     /**
-     * Gets the color that should be launched next based on the motif pattern.
-     * Uses the current ball count to determine position in the repeating motif
-     * sequence.
+	 * Determines the color of the next artifact needed to satisfy the motif pattern.
+	 * <p>
+	 * Calculates the position in the repeating motif sequence based on the number of
+	 * balls already collected.
      *
-     * @return The desired color for the next ball, or NONE if motif is
-     * unknown/empty.
+	 * @return The desired {@link Artifact.Color}, or NONE if the motif is unknown.
      */
     public Artifact.Color getNextDesiredColor() {
         if (motif == null || motif == Motif.UNKNOWN || motif.state.length == 0) {

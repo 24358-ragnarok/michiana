@@ -8,12 +8,16 @@ import org.firstinspires.ftc.teamcode.config.MatchState;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
 /**
- * Abstract base class for all path-following actions.
- * Handles dynamic path building from current robot position to target poses,
- * with automatic alliance mirroring and different path types.
+ * Abstract base class for all path-following autonomous actions.
  * <p>
- * This replaces the rigid PathRegistry system with flexible, composable
- * actions.
+ * This class handles the common logic for:
+ * <ul>
+ *   <li>Alliance-specific mirroring of target poses.</li>
+ *   <li>Dynamic path generation from the robot's current position.</li>
+ *   <li>Executing the path following using the robot's drivetrain.</li>
+ * </ul>
+ * Subclasses must implement {@link #buildPath(Robot, Pose, Pose)} to define the specific
+ * path geometry (e.g., linear, curved, splined).
  */
 public abstract class PathAction implements AutonomousAction {
     protected final Pose targetPose;
@@ -23,11 +27,11 @@ public abstract class PathAction implements AutonomousAction {
     private PathChain generatedPath;
 
     /**
-     * Creates a new path action.
+     * Creates a new PathAction.
      *
-     * @param targetPose The target pose (in BLUE alliance coordinates)
-     * @param name       Human-readable name for telemetry
-     * @param isBlue     The alliance color for automatic mirroring
+     * @param targetPose The target pose in BLUE alliance coordinates.
+     * @param name       A descriptive name for the action.
+     * @param isBlue     True if the robot is on the BLUE alliance, false for RED.
      */
     public PathAction(Pose targetPose, String name, boolean isBlue) {
         this.targetPose = targetPose;
@@ -36,39 +40,57 @@ public abstract class PathAction implements AutonomousAction {
     }
 
     /**
-     * Convenience constructor that extracts alliance from MatchState.
+     * Creates a new PathAction using the global match state for alliance color.
+     *
+     * @param targetPose The target pose in BLUE alliance coordinates.
+     * @param name       A descriptive name for the action.
      */
     public PathAction(Pose targetPose, String name) {
         this(targetPose, name, MatchState.isBlue);
     }
 
+    /**
+     * Initializes the path action.
+     * <p>
+     * Calculates the actual target pose based on alliance color, builds the path from the
+     * robot's current position, and commands the follower to start driving.
+     *
+     * @param bot The robot instance.
+     */
     @Override
     public void initialize(Robot bot) {
-        // Get current robot position
         Pose currentPose = bot.dt.follower.getPose();
 
-        // Mirror target pose if we're on RED alliance
         Pose actualTarget = isBlue
                 ? targetPose
                 : targetPose.mirror();
 
-        // Build the path dynamically from current position to target
         generatedPath = buildPath(bot, currentPose, actualTarget);
 
-        // Start following the path
         followPath(bot, generatedPath);
     }
 
+    /**
+     * Executes the path following logic.
+     *
+     * @param bot The robot instance.
+     * @return true if the follower has finished the path, false otherwise.
+     */
     @Override
     public boolean execute(Robot bot) {
-        // Action is complete when the follower is no longer busy
         return !bot.dt.follower.isBusy();
     }
 
+    /**
+     * Ends the path action.
+     * <p>
+     * If interrupted, it forces the follower to stop immediately.
+     *
+     * @param bot         The robot instance.
+     * @param interrupted True if the action was interrupted.
+     */
     @Override
     public void end(Robot bot, boolean interrupted) {
-        // Path following will naturally stop when complete
-        // If interrupted, break
         if (interrupted) {
             bot.dt.follower.breakFollowing();
         }
@@ -80,31 +102,31 @@ public abstract class PathAction implements AutonomousAction {
     }
 
     /**
-     * Builds the actual path from start to end pose.
-     * Subclasses implement this to create different path types (linear, curved,
-     * etc.).
+     * Constructs the specific path geometry from the start pose to the end pose.
      *
-     * @param bot       The mechanism manager
-     * @param startPose The starting pose (robot's current position)
-     * @param endPose   The target pose (already mirrored for alliance)
-     * @return The constructed PathChain
+     * @param bot       The robot instance.
+     * @param startPose The current pose of the robot.
+     * @param endPose   The target pose (already mirrored if necessary).
+     * @return The constructed {@link PathChain}.
      */
     protected abstract PathChain buildPath(Robot bot, Pose startPose, Pose endPose);
 
     /**
-     * Starts following the generated path.
-     * Subclasses can override this to modify following behavior (e.g., slow speed).
+     * Commands the robot to follow the generated path.
+     * <p>
+     * Can be overridden by subclasses to apply specific following parameters.
      *
-     * @param bot  The mechanism manager
-     * @param path The path to follow
+     * @param bot  The robot instance.
+     * @param path The path to follow.
      */
     protected void followPath(Robot bot, PathChain path) {
         bot.dt.follower.followPath(path, true);
     }
 
     /**
-     * Gets the final target pose (after alliance mirroring).
-     * Useful for debugging and telemetry.
+     * Gets the final target pose, accounting for alliance mirroring.
+     *
+     * @return The actual target pose on the field.
      */
     public Pose getFinalTargetPose() {
         return isBlue

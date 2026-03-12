@@ -1,8 +1,15 @@
 package org.firstinspires.ftc.teamcode.util.telemetry;
 
+/**
+ * Utility class for formatting text with HTML tags for the Driver Station telemetry.
+ * <p>
+ * Provides methods for coloring, sizing, and styling text, as well as semantic presets
+ * for headers, success messages, errors, and warnings.
+ */
 public class TextFormat {
 
     // --- Base HTML Wrappers ---
+
     public static String color(String text, String hexColor) {
         return "<font color='" + hexColor + "'>" + text + "</font>";
     }
@@ -24,6 +31,7 @@ public class TextFormat {
     }
 
     // --- Semantic Presets ---
+
     public static String header(String text) {
         return big(bold(color(text, "#448aff"))); // FTC Blue
     }
@@ -47,7 +55,13 @@ public class TextFormat {
     // --- Utilities ---
 
     /**
-     * Strips all HTML tags from a string. Required for Panels compatibility.
+     * Strips all HTML tags from a string.
+     * <p>
+     * Required for compatibility with telemetry sinks that do not support HTML,
+     * such as the FTControl Panels log.
+     *
+     * @param html The HTML string to strip.
+     * @return The plain text string.
      */
     public static String stripHtml(String html) {
         if (html == null) return null;

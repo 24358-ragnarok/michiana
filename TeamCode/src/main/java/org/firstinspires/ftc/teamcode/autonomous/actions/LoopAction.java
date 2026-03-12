@@ -6,18 +6,11 @@ import org.firstinspires.ftc.teamcode.config.Settings;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
 /**
- * Action that loops a sub-sequence of actions until a specified number of
- * seconds
- * are left in the autonomous period.
+ * An action that repeatedly executes a sub-sequence of actions until a specified time remains.
  * <p>
- * This enables time-aware looping strategies like:
- * - Repeatedly collecting and launching balls from human player until 5 seconds
- * left
- * - Running a cycle as many times as possible before needing to park
- * <p>
- * The loop will complete its current iteration before checking if time has
- * expired.
- * To guarantee exit time, ensure individual loop actions are short enough.
+ * This is useful for maximizing the number of cycles (e.g., scoring samples) within the
+ * autonomous period. The loop will complete the current iteration fully before checking
+ * the time condition, ensuring the robot doesn't stop in an unsafe state.
  */
 public class LoopAction implements AutonomousAction {
 
@@ -26,11 +19,10 @@ public class LoopAction implements AutonomousAction {
     private int loopCount;
 
     /**
-     * Creates a new loop action.
+     * Creates a new LoopAction.
      *
-     * @param secondsToLeave Number of seconds to leave remaining when stopping the
-     *                       loop
-     * @param loopSequence   The sequence of actions to loop
+     * @param secondsToLeave The minimum time (in seconds) that must remain to start another iteration.
+     * @param loopSequence   The sequence of actions to be repeated.
      */
     public LoopAction(double secondsToLeave, AutonomousSequence loopSequence) {
         this.secondsToLeave = secondsToLeave;
@@ -48,21 +40,21 @@ public class LoopAction implements AutonomousAction {
     public boolean execute(Robot bot) {
         double timeLeft = Settings.Autonomous.DURATION - bot.elapsedTime;
 
-        // Check if we should stop looping (not enough time left)
+        // Check if we have enough time to start another loop
         if (timeLeft <= secondsToLeave) {
-            return true; // Exit the loop
+            return true; // Stop looping
         }
 
-        // Update the loop sequence
+        // Update the sub-sequence
         loopSequence.update(bot);
 
-        // If the loop sequence completed, restart it for another iteration
+        // If the sub-sequence finished, restart it and increment the counter
         if (loopSequence.isComplete()) {
             loopCount++;
             loopSequence.start(bot);
         }
 
-        return false; // Continue looping
+        return false; // Continue executing
     }
 
     @Override
@@ -77,7 +69,7 @@ public class LoopAction implements AutonomousAction {
 
     @Override
     public double getTimeoutSeconds() {
-        // No timeout - the loop is time-managed by secondsToLeave
+        // No timeout; the loop is controlled by the remaining match time
         return 0.0;
     }
 }

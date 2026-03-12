@@ -25,17 +25,30 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * UnifiedLogging utilizing JoinedTelemetry for automatic DS/Panels synchronization.
+ * A unified logging system that bridges standard FTC Telemetry with FTControl Panels.
+ * <p>
+ * This class provides a centralized way to send data to both the Driver Station and
+ * the FTControl Panels dashboard. It handles:
+ * <ul>
+ *   <li>Automatic synchronization between DS and Panels.</li>
+ *   <li>Caching of telemetry items for efficient updates.</li>
+ *   <li>Field rendering and robot pose visualization.</li>
+ *   <li>Formatted text output (HTML for DS).</li>
+ * </ul>
  */
 public class Logging {
-    public final Telemetry log;
+    public final JoinedTelemetry log;
     private FieldRenderer fieldRenderer;
     private final Map<String, Telemetry.Item> itemCache = new HashMap<>();
     private final Map<String, Telemetry.Line> lineCache = new HashMap<>();
-    private boolean retainedMode = false;
 
+    /**
+     * Initializes the logging system.
+     *
+     * @param telemetry The standard OpMode telemetry instance.
+     */
     public Logging(Telemetry telemetry) {
-        // JoinedTelemetry automatically bridges DS and Panels
+        // joinedTelemetry automatically bridges DS and Panels
         this.log = new JoinedTelemetry(PanelsTelemetry.INSTANCE.getFtcTelemetry(), telemetry);
         Drawing.init();
 
@@ -48,14 +61,22 @@ public class Logging {
         log.update();
     }
 
+    /**
+     * Completes the setup, including initializing the field renderer.
+     * Should be called after hardware initialization is complete.
+     */
     public void finishSetup() {
         this.fieldRenderer = new FieldRenderer(log);
     }
 
-
     /**
-     * Replaces or creates a persistent item.
-     * Use this for high-priority blocks (like the Dashboard) to keep them at the top.
+     * Updates or creates a persistent telemetry item.
+     * <p>
+     * Useful for high-priority status indicators that should remain visible at the top
+     * of the telemetry log.
+     *
+     * @param key     The caption/key for the item.
+     * @param content The value to display.
      */
     public void setItem(String key, String content) {
         Telemetry.Item item = itemCache.get(key);
@@ -68,6 +89,12 @@ public class Logging {
         }
     }
 
+    /**
+     * Adds a labeled line to the telemetry, caching it for reuse.
+     *
+     * @param label The label text.
+     * @return The created or retrieved {@link Telemetry.Line}.
+     */
     public Telemetry.Line addLabeledLine(String label) {
         Telemetry.Line line = lineCache.get(label);
         if (line == null) {
@@ -77,31 +104,59 @@ public class Logging {
         return line;
     }
 
+    /**
+     * Adds a formatted {@link LogLine} to the telemetry output.
+     *
+     * @param line The LogLine object containing formatted text.
+     */
     public void addLine(LogLine line) {
         log.addLine(line.getHtml());
     }
 
+    /**
+     * Adds a raw string line to the telemetry output.
+     *
+     * @param line The string to display.
+     */
     public void addLine(String line) {
         log.addLine(line);
     }
 
+    /**
+     * Adds a data item to the telemetry.
+     * <p>
+     * If retained mode is enabled, the item is cached and updated in place.
+     *
+     * @param key   The caption.
+     * @param value The value object.
+     */
     public void addData(String key, Object value) {
         Telemetry.Item item = itemCache.get(key);
         if (item == null) {
             item = log.addData(key, value);
-            if (retainedMode) {
-                item.setRetained(true);
-                itemCache.put(key, item);
-            }
+            item.setRetained(true);
+            itemCache.put(key, item);
         } else {
             item.setValue(value);
         }
     }
 
+    /**
+     * Adds a formatted number to the telemetry.
+     *
+     * @param key   The caption.
+     * @param value The double value, formatted to 2 decimal places.
+     */
     public void addNumber(String key, double value) {
         addData(key, String.format(Locale.US, "%.2f", value));
     }
 
+    /**
+     * Registers a value producer that is polled automatically.
+     *
+     * @param key           The caption.
+     * @param valueProducer A function that returns the value to display.
+     */
     public void listen(String key, Func<?> valueProducer) {
         Telemetry.Item item = itemCache.get(key);
         if (item != null) {
@@ -112,19 +167,23 @@ public class Logging {
         itemCache.put(key, item);
     }
 
-    public void enableRetainedMode() {
-        this.retainedMode = true;
-    }
-
+    /**
+     * Clears all non-retained telemetry items.
+     */
     public void clearDynamic() {
         log.clear();
     }
 
+    /**
+     * Completely clears the telemetry and resets all caches.
+     */
     public void clearAll() {
         log.clearAll();
         itemCache.clear();
         lineCache.clear();
     }
+
+    // --- Drawing Methods ---
 
     public void drawRobot(Pose pose) {
         Drawing.drawRobot(pose);
@@ -138,21 +197,35 @@ public class Logging {
         Drawing.drawPath(path);
     }
 
-    public void update(Pose robotPose) {
+    /**
+     * Updates the telemetry transmission and field rendering.
+     * <p>
+     * Should be called at the end of every loop cycle.
+     *
+     */
+    public void update() {
         Drawing.update();
         log.update();
-        if (Settings.Logging.DRAW_FIELD) {
+        log.clear();
+    }
+
+    public void update(Pose robotPose) {
+        if (Settings.Logging.DRAW_FIELD && fieldRenderer != null) {
             fieldRenderer.render(robotPose.getX(), robotPose.getY(), robotPose.getHeading(), robotLook.getOutlineFill());
         }
+        update();
     }
 }
 
+/**
+ * Helper class for drawing on the FTControl Panels field visualization.
+ */
 class Drawing {
     public static final double ROBOT_RADIUS = (Settings.Dimensions.WIDTH + Settings.Dimensions.LENGTH) / 4;
     private static final FieldManager panelsField = PanelsField.INSTANCE.getField();
 
     /**
-     * This prepares Panels Field for using Pedro Offsets
+     * Initializes the field configuration with PedroPathing presets.
      */
     public static void init() {
         panelsField.setOffsets(PanelsField.INSTANCE.getPresets().getPEDRO_PATHING());
@@ -160,10 +233,12 @@ class Drawing {
     }
 
     /**
-     * This draws everything that will be used in the Follower's telemetryDebug() method. This takes
-     * a Follower as an input, so an instance of the DashboardDrawingHandler class is not needed.
+     * Draws debug information from the PedroPathing follower.
+     * <p>
+     * Visualizes the current path, the closest point on the path, the robot's pose history,
+     * and the current robot pose.
      *
-     * @param follower Pedro Follower instance.
+     * @param follower The PedroPathing follower instance.
      */
     public static void drawDebug(Follower follower) {
         if (follower.getCurrentPathChain() != null) {
@@ -180,11 +255,10 @@ class Drawing {
     }
 
     /**
-     * This draws a robot at a specified Pose with a specified
-     * look. The heading is represented as a line.
+     * Draws the robot at a specific pose.
      *
-     * @param pose  the Pose to draw the robot at
-     * @param style the parameters used to draw the robot with
+     * @param pose  The pose to draw.
+     * @param style The visual style (color, opacity).
      */
     public static void drawRobot(Pose pose, Style style) {
         if (pose == null || Double.isNaN(pose.getX()) || Double.isNaN(pose.getY()) || Double.isNaN(pose.getHeading())) {
@@ -205,21 +279,10 @@ class Drawing {
         panelsField.line(x2, y2);
     }
 
-    /**
-     * This draws a robot at a specified Pose. The heading is represented as a line.
-     *
-     * @param pose the Pose to draw the robot at
-     */
     public static void drawRobot(Pose pose) {
         drawRobot(pose, robotLook);
     }
 
-    /**
-     * This draws a Path with a specified look.
-     *
-     * @param path  the Path to draw
-     * @param style the parameters used to draw the Path with
-     */
     public static void drawPath(Path path, Style style) {
         double[][] points = path.getPanelsDrawingPoints();
 
@@ -238,34 +301,16 @@ class Drawing {
         }
     }
 
-    /**
-     * This draws all the Paths in a PathChain with a
-     * specified look.
-     *
-     * @param pathChain the PathChain to draw
-     * @param style     the parameters used to draw the PathChain with
-     */
     public static void drawPath(PathChain pathChain, Style style) {
         for (int i = 0; i < pathChain.size(); i++) {
             drawPath(pathChain.getPath(i), style);
         }
     }
 
-    /**
-     * This draws a path chain.
-     *
-     * @param pathChain the PathChain to draw
-     */
     public static void drawPath(PathChain pathChain) {
         drawPath(pathChain, robotLook);
     }
 
-    /**
-     * This draws the pose history of the robot.
-     *
-     * @param poseTracker the PoseHistory to get the pose history from
-     * @param style       the parameters used to draw the pose history with
-     */
     public static void drawPoseHistory(PoseHistory poseTracker, Style style) {
         panelsField.setStyle(style);
 
@@ -276,17 +321,12 @@ class Drawing {
         }
     }
 
-    /**
-     * This draws the pose history of the robot.
-     *
-     * @param poseTracker the PoseHistory to get the pose history from
-     */
     public static void drawPoseHistory(PoseHistory poseTracker) {
         drawPoseHistory(poseTracker, robotLook);
     }
 
     /**
-     * This tries to send the current packet to FTControl Panels.
+     * Sends the drawing packet to the Panels client.
      */
     public static void update() {
         panelsField.update();
