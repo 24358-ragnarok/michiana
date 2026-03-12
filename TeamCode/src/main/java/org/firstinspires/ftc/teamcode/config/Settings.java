@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.config;
 
+import android.content.Context;
+
 import com.bylazar.field.Style;
 import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
@@ -8,18 +10,23 @@ import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
 import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
+import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathConstraints;
+import com.qualcomm.ftccommon.FtcEventLoop;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.ftccommon.external.OnCreateEventLoop;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.pathing.tank.TankDrivetrain;
+import org.psilynx.psikit.ftc.autolog.PsiKitAutoLogSettings;
 
-public class Constants {
+public class Settings {
     public static class Flags {
         public static final boolean DEBUG = true;
     }
+
     /**
      * PedroPathing configuration.
      * Holds the constants for both Tank and Mecanum followers, using a common() set of parameters.
@@ -164,6 +171,12 @@ public class Constants {
         }
     }
 
+    public static class Drivetrain {
+        // Butterfly Drivetrain
+        public static double MECANUM_DOWN_POSITION = 0.2;
+        public static double TANK_DOWN_POSITION = 0.6;
+    }
+
     /**
      * Simple robot measurements
      **/
@@ -182,16 +195,34 @@ public class Constants {
         public static final String LEFT_REAR_MOTOR = "leftRear";
         public static final String RIGHT_FRONT_MOTOR = "rightFront";
         public static final String RIGHT_REAR_MOTOR = "rightRear";
-
+        public static final String BUTTERFLY = "butterfly";
     }
 
     public static class Logging {
         public static final int INTERVAL = Flags.DEBUG ? 50 : 1000;
+        public static final boolean DRAW_FIELD = Flags.DEBUG;
         public static final Style followerLook = new Style(
                 "", "#FFD40C", 0.75
         );
         public static final Style robotLook = new Style(
                 "", "#4CAF50", 0.75
         );
+    }
+
+    public static class Positions {
+        public static class TeleopPresets {
+            public static final Pose CLOSE_SHOOT = new Pose(54.92, 86.55, Math.toRadians(130.6));
+            public static final Pose FAR_SHOOT = new Pose(60, 18, Math.toRadians(112.75));
+            public static final Pose HUMAN_PLAYER = new Pose(30, 30, Math.toRadians(225));
+            public static final Pose GATE = new Pose(12.44, 62, Math.toRadians(150));
+            public static final Pose PARK = new Pose(106, 32, Math.toRadians(180));
+        }
+    }
+
+    @OnCreateEventLoop
+    public static void configure(Context context, FtcEventLoop ftcEventLoop) {
+        System.setProperty(PsiKitAutoLogSettings.PROPERTY_RLOG_PORT, Flags.DEBUG ? "5900" : "0");
+        PsiKitAutoLogSettings.enabledByDefault = Flags.DEBUG;
+        PsiKitAutoLogSettings.enableLinearByDefault = Flags.DEBUG;
     }
 }

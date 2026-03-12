@@ -1,23 +1,24 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import static org.firstinspires.ftc.teamcode.config.Constants.Logging.INTERVAL;
-
-import com.bylazar.panels.Panels;
-import com.bylazar.telemetry.PanelsTelemetry;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.util.FieldRenderer;
 import org.firstinspires.ftc.teamcode.util.LogLine;
 import org.firstinspires.ftc.teamcode.util.TextFormat;
-import org.firstinspires.ftc.teamcode.util.UnifiedLogging;
+import org.firstinspires.ftc.teamcode.util.Logging;
+
+import dev.frozenmilk.dairy.core.util.supplier.logical.EnhancedBooleanSupplier;
+import dev.frozenmilk.dairy.core.util.supplier.numeric.EnhancedDoubleSupplier;
+import dev.frozenmilk.dairy.pasteurized.Pasteurized;
+import dev.frozenmilk.dairy.pasteurized.PasteurizedGamepad;
 
 @TeleOp(name = "Rendering Example", group = "Tests")
 public class RenderExample extends OpMode {
 
     private Telemetry.Item dashboardItem;
-    private FieldRenderer fieldRenderer;
+    private Logging log;
 
     private double poseX = 100;
     private double poseY = 77.0;
@@ -25,13 +26,11 @@ public class RenderExample extends OpMode {
 
     @Override
     public void init() {
-        UnifiedLogging l = new UnifiedLogging(telemetry, PanelsTelemetry.INSTANCE.getTelemetry());
-
-        // Register the text dashboard item first to enforce rendering order (top)
+        PasteurizedGamepad<EnhancedDoubleSupplier, EnhancedBooleanSupplier> mainController = Pasteurized.gamepad1();
+        mainController.a().state();
+        // PanelsGamepad.INSTANCE.getFirstManager().asCombinedFTCGamepad(mainController);
+        Logging log = new Logging(telemetry);
         dashboardItem = telemetry.addData("", "");
-
-        // FieldRenderer registers its own item sequentially after (bottom)
-        fieldRenderer = new FieldRenderer(telemetry);
     }
 
     @Override
@@ -69,8 +68,6 @@ public class RenderExample extends OpMode {
 
         dashboardItem.setValue(dashboardHtml.toString());
 
-        fieldRenderer.render(poseX, poseY, poseHeading, "#00ff88");
-
-        telemetry.update();
+        log.update(new Pose(poseX, poseY, poseHeading));
     }
 }
