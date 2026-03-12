@@ -10,19 +10,51 @@
 
 
 // Custom definitions may go here
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://repo.dairy.foundation/releases"
+        }
+    }
+    dependencies {
+        classpath "dev.frozenmilk:Load:0.2.4"
+    }
+}
 
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
+apply plugin: "dev.frozenmilk.sinister.sloth.load"
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
+
+    compileSdk 35
+
+    defaultConfig {
+        minSdk 24
+    }
 
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
 }
 
+repositories {
+    // Dairy releases repository
+    maven {
+        url = "https://repo.dairy.foundation/releases"
+    }
+    // Dairy snapshots repository
+    maven {
+        url = "https://repo.dairy.foundation/snapshots"
+    }
+}
+
 dependencies {
     implementation project(':FtcRobotController')
+    implementation "com.bylazar:fullpanels:1.0.12"
+    implementation "com.github.Eeshwar-Krishnan:PhotonFTC:-SNAPSHOT"
+    implementation("dev.frozenmilk.sinister:Sloth:0.2.4")
 }
