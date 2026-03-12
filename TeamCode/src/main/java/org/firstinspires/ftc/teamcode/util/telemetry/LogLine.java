@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.util.telemetry;
 
 public class LogLine {
     private final StringBuilder builder = new StringBuilder();

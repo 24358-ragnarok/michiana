@@ -54,7 +54,7 @@ repositories {
 
 dependencies {
     implementation project(':FtcRobotController')
-    implementation("com.bylazar.sloth:fullpanels:0.2.4.1+1.0.12")
+    implementation 'com.bylazar:fullpanels:1.0.12'
     implementation "org.solverslib:core:0.3.4"
     implementation "org.solverslib:pedroPathing:0.3.4"
     implementation("org.solverslib:photon:0.3.4")

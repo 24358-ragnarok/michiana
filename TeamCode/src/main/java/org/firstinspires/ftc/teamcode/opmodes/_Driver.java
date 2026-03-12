@@ -16,7 +16,7 @@ public class _Driver extends OpMode {
 
     @Override
     public void loop() {
-        bot.update();
+        bot.update(time);
         bot.dt.drive(bot.ctrl.main.leftStickY().state(), bot.ctrl.main.leftStickX().state(), bot.ctrl.main.rightStickX().state());
     }
 

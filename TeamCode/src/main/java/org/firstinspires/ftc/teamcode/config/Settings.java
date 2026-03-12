@@ -209,6 +209,9 @@ public class Settings {
         );
     }
 
+    public static class Autonomous {
+        public static final double DURATION = 30;
+    }
     public static class Positions {
         public static class TeleopPresets {
             public static final Pose CLOSE_SHOOT = new Pose(54.92, 86.55, Math.toRadians(130.6));

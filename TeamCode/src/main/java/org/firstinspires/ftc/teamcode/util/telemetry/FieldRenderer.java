@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.util.telemetry;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 

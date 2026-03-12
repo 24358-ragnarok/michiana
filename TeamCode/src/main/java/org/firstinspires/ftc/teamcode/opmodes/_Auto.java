@@ -16,7 +16,7 @@ public class _Auto extends OpMode {
 
     @Override
     public void loop() {
-        bot.update();
+        bot.update(time);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.util.telemetry;
 
 import static org.firstinspires.ftc.teamcode.config.Settings.Logging.INTERVAL;
 import static org.firstinspires.ftc.teamcode.config.Settings.Logging.followerLook;
@@ -186,7 +186,6 @@ class Drawing {
      * @param pose  the Pose to draw the robot at
      * @param style the parameters used to draw the robot with
      */
-    @SuppressWarnings("MethodWithMultipleReturnPoints")
     public static void drawRobot(Pose pose, Style style) {
         if (pose == null || Double.isNaN(pose.getX()) || Double.isNaN(pose.getY()) || Double.isNaN(pose.getHeading())) {
             return;
@@ -282,7 +281,6 @@ class Drawing {
      *
      * @param poseTracker the PoseHistory to get the pose history from
      */
-    @SuppressWarnings("unused")
     public static void drawPoseHistory(PoseHistory poseTracker) {
         drawPoseHistory(poseTracker, robotLook);
     }

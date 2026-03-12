@@ -5,20 +5,16 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.util.LogLine;
-import org.firstinspires.ftc.teamcode.util.TextFormat;
-import org.firstinspires.ftc.teamcode.util.Logging;
-
-import dev.frozenmilk.dairy.core.util.supplier.logical.EnhancedBooleanSupplier;
-import dev.frozenmilk.dairy.core.util.supplier.numeric.EnhancedDoubleSupplier;
-import dev.frozenmilk.dairy.pasteurized.Pasteurized;
-import dev.frozenmilk.dairy.pasteurized.PasteurizedGamepad;
+import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.util.telemetry.LogLine;
+import org.firstinspires.ftc.teamcode.util.telemetry.Logging;
+import org.firstinspires.ftc.teamcode.util.telemetry.TextFormat;
 
 @TeleOp(name = "Rendering Example", group = "Tests")
 public class RenderExample extends OpMode {
 
     private Telemetry.Item dashboardItem;
-    private Logging log;
+    private Robot bot;
 
     private double poseX = 100;
     private double poseY = 77.0;
@@ -26,18 +22,16 @@ public class RenderExample extends OpMode {
 
     @Override
     public void init() {
-        PasteurizedGamepad<EnhancedDoubleSupplier, EnhancedBooleanSupplier> mainController = Pasteurized.gamepad1();
-        mainController.a().state();
-        // PanelsGamepad.INSTANCE.getFirstManager().asCombinedFTCGamepad(mainController);
+        bot = new Robot(hardwareMap, telemetry, gamepad1, gamepad2);
         Logging log = new Logging(telemetry);
         dashboardItem = telemetry.addData("", "");
     }
 
     @Override
     public void loop() {
-        poseX += gamepad1.left_stick_x * 2.0;
-        poseY -= gamepad1.left_stick_y * 2.0;
-        poseHeading -= gamepad1.right_stick_x * 0.1;
+        poseX += bot.ctrl.main.leftStickX().state() * 2.0;
+        poseY -= bot.ctrl.main.leftStickY().state() * 2.0;
+        poseHeading -= bot.ctrl.main.rightStickX().state() * 0.1;
 
         poseX = Math.max(0, Math.min(144, poseX));
         poseY = Math.max(0, Math.min(144, poseY));
@@ -68,6 +62,6 @@ public class RenderExample extends OpMode {
 
         dashboardItem.setValue(dashboardHtml.toString());
 
-        log.update(new Pose(poseX, poseY, poseHeading));
+        bot.log.update(new Pose(poseX, poseY, poseHeading));
     }
 }
