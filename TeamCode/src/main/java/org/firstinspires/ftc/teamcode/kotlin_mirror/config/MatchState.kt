@@ -12,22 +12,18 @@ import org.firstinspires.ftc.teamcode.kotlin_mirror.util.game.Classifier
  * It is used to pass information between the initialization wizard and the running OpMode.
  */
 object MatchState {
-    @JvmField
     var classifier: Classifier = Classifier.empty()
-    @JvmField
     var isBlue: Boolean = true
-    @JvmField
     var startsFar: Boolean = true
-    @JvmField
     var storedPose: Pose = Pose()
-    
-    private var runtime: AutonomousRuntime = AutonomousRuntime.DEFAULT
+
+    var runtime: AutonomousRuntime = AutonomousRuntime.DEFAULT
+        private set
 
     /**
      * Resets the match state to default values.
      * Should be called before the start of an autonomous run.
      */
-    @JvmStatic
     fun prepForAuto() {
         classifier = Classifier.empty()
         // Reset configuration to sane defaults before each auto
@@ -36,32 +32,9 @@ object MatchState {
         runtime = AutonomousRuntime.DEFAULT
     }
 
-    @JvmStatic
-    fun getAutonomousRuntime(): AutonomousRuntime {
-        return runtime
-    }
-
-    @JvmStatic
-    fun setAutonomousRuntime(newRuntime: AutonomousRuntime?) {
-        if (newRuntime != null) {
-            runtime = newRuntime
-        }
-    }
-
-    @JvmStatic
-    fun getStartsFar(): Boolean {
-        return startsFar
-    }
-
-    @JvmStatic
-    fun setStartsFar(value: Boolean) {
-        startsFar = value
-    }
-
     /**
      * Cycles to the next available autonomous runtime that supports the current starting position.
      */
-    @JvmStatic
     fun nextAutonomousRuntimeForCurrentPosition() {
         runtime = runtime.nextFor(startsFar)
     }
@@ -69,8 +42,13 @@ object MatchState {
     /**
      * Cycles to the previous available autonomous runtime that supports the current starting position.
      */
-    @JvmStatic
     fun previousAutonomousRuntimeForCurrentPosition() {
         runtime = runtime.previousFor(startsFar)
+    }
+
+    fun setAutonomousRuntime(newRuntime: AutonomousRuntime?) {
+        if (newRuntime != null) {
+            runtime = newRuntime
+        }
     }
 }

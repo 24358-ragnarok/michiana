@@ -16,7 +16,7 @@ class _Driver : OpMode() {
     /**
      * The robot hardware interface.
      */
-    lateinit var bot: Robot
+    private lateinit var bot: Robot
 
     /**
      * Initializes the robot and subsystems.
@@ -37,15 +37,7 @@ class _Driver : OpMode() {
      * Runs at the beginning of the mode play.
      */
     override fun start() {
-        // bot.start() // Robot.start() was not defined in Robot.kt, maybe it was in sys.Robot?
-        // Checking Robot.kt... no start() method.
-        // Checking Robot.java... no start() method.
-        // Maybe it was removed or I missed it?
-        // In _Driver.java above: bot.start();
-        // But Robot.java in tool 0_tool_6f767788... didn't have start().
-        // Ah, `sys.Robot` might have had it.
-        // I'll comment it out for now or assume it's not needed if not in my Robot.kt
-        // bot.start() 
+        bot.start()
     }
 
     /**

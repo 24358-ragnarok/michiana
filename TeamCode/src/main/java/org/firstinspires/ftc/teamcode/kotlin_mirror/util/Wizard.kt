@@ -79,9 +79,9 @@ class Wizard(private val bot: Robot) {
         MatchState.startsFar = startsFar
 
         // If current runtime doesn't support the new position, switch to one that does
-        if (!MatchState.getAutonomousRuntime().supportsPosition(startsFar)) {
+        if (!MatchState.runtime.supportsPosition(startsFar)) {
             MatchState.setAutonomousRuntime(
-                MatchState.getAutonomousRuntime().nextFor(startsFar)
+                MatchState.runtime.nextFor(startsFar)
             )
         }
     }
@@ -154,7 +154,7 @@ class Wizard(private val bot: Robot) {
 
         val runtimeLine = LogLine()
             .appendBold("Runtime: ")
-            .append(MatchState.getAutonomousRuntime().displayName)
+            .append(MatchState.runtime.displayName)
         bot.log.addLine(runtimeLine)
     }
 }

@@ -20,13 +20,13 @@ class _Auto : OpMode() {
     /**
      * The robot hardware interface.
      */
-    lateinit var bot: Robot
-    lateinit var auto: AutonomousSequence
+    private lateinit var bot: Robot
+    private lateinit var auto: AutonomousSequence
 
     /**
      * A configuration wizard to handle initial telemetry.
      */
-    lateinit var wizard: Wizard
+    private lateinit var wizard: Wizard
 
     /**
      * Initializes the robot and subsystems.
@@ -41,7 +41,6 @@ class _Auto : OpMode() {
      * Runs constantly after initialization but before run.
      */
     override fun init_loop() {
-        // bot.log.drawRobot(MatchState.getAutonomousRuntime());
         wizard.refresh()
         bot.log.update()
     }
@@ -53,9 +52,9 @@ class _Auto : OpMode() {
         bot.dt.follower.setStartingPose(
             if (MatchState.startsFar) Settings.Positions.BotPoses.START_FAR else Settings.Positions.BotPoses.START_CLOSE
         )
-        // bot.start()
+        bot.start()
 
-        val runtime = MatchState.getAutonomousRuntime()
+        val runtime = MatchState.runtime
         auto = if (MatchState.startsFar) {
             runtime.buildFarSequence()
         } else {

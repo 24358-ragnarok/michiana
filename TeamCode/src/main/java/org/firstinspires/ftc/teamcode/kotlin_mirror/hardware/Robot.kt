@@ -63,6 +63,13 @@ class Robot(
     }
 
     /**
+     * Starts robot subsystems that need explicit begin-of-opmode initialization.
+     */
+    fun start() {
+        log.finishSetup()
+    }
+
+    /**
      * Updates the robot's state.
      *
      * This method should be called once per loop iteration. It clears the bulk cache,
