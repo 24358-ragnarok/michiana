@@ -6,6 +6,7 @@ import com.seattlesolvers.solverslib.photon.PhotonCore;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.sys.hardware.ButterflyDrivetrain;
+import org.firstinspires.ftc.teamcode.sys.hardware.HoodedLauncher;
 import org.firstinspires.ftc.teamcode.sys.software.Peripherals;
 import org.firstinspires.ftc.teamcode.util.Controller;
 import org.firstinspires.ftc.teamcode.util.telemetry.Logging;
@@ -37,7 +38,10 @@ public class Robot {
      * You know, because we're fancy like that.
      */
     public final Peripherals peripherals;
-
+    /**
+     * To launcht the balls...
+     */
+    public final HoodedLauncher launcher;
     /**
      * The elapsed time since the last update, in seconds.
      */
@@ -58,6 +62,7 @@ public class Robot {
         log = new Logging(telemetry);
         ctrl = new Controller(gamepad1, gamepad2);
         dt = new ButterflyDrivetrain(hardwareMap);
+        launcher = new HoodedLauncher(hardwareMap);
         peripherals = new Peripherals(hardwareMap);
     }
 
@@ -76,6 +81,7 @@ public class Robot {
         PhotonCore.EXPANSION_HUB.clearBulkCache();
 
         dt.update();
+        launcher.update(dt.follower.getPose());
         log.update(dt.follower.getPose());
     }
 
@@ -91,5 +97,6 @@ public class Robot {
      */
     public void stop() {
         dt.stop();
+        launcher.stop();
     }
 }

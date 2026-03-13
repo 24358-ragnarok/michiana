@@ -32,7 +32,6 @@ public class Settings {
     public static void configure(Context context, FtcEventLoop ftcEventLoop) {
         System.setProperty(PsiKitAutoLogSettings.PROPERTY_RLOG_PORT, Flags.DEBUG ? "5900" : "0");
         PsiKitAutoLogSettings.enabledByDefault = Flags.DEBUG;
-        PsiKitAutoLogSettings.enableLinearByDefault = Flags.DEBUG;
     }
 
     /**
@@ -156,8 +155,52 @@ public class Settings {
 
     public static class Drivetrain {
         // Butterfly Drivetrain Servo Positions
-        public static double MECANUM_DOWN_POSITION = 0.2;
-        public static double TANK_DOWN_POSITION = 0.6;
+        public static double RIGHT_MECANUM_DOWN_POSITION = 0.2;
+        public static double RIGHT_TANK_DOWN_POSITION = 0.6;
+        public static double LEFT_MECANUM_DOWN_POSITION = 0.6;
+        public static double LEFT_TANK_DOWN_POSITION = 0.2;
+    }
+
+    public static class Launcher {
+        // Hood calibration: map 10-50 degrees into servo range 0.2-0.8.
+        public static double HOOD_MIN_ANGLE_RAD = Math.toRadians(10.0);
+        public static double HOOD_MAX_ANGLE_RAD = Math.toRadians(50.0);
+        public static double HOOD_MIN_SERVO_POSITION = 0.2;
+        public static double HOOD_MAX_SERVO_POSITION = 0.8;
+        // Flywheel target conversion:
+        // flywheel velocity * motor-to-flywheel ratio = motor velocity target.
+        public static double GEAR_RATIO_MOTOR_TO_FLYWHEEL = 1.0;
+        // Per-servo PIDF used by software loop for the shared yaw axle.
+        public static com.qualcomm.robotcore.hardware.PIDFCoefficients YAW_PIDF_R =
+                new com.qualcomm.robotcore.hardware.PIDFCoefficients(
+                        1.8, 0.0, 0.06, 0.0);
+        public static com.qualcomm.robotcore.hardware.PIDFCoefficients YAW_PIDF_L =
+                new com.qualcomm.robotcore.hardware.PIDFCoefficients(
+                        1.8, 0.0, 0.06, 0.0);
+        public static double YAW_MAX_POWER = 1.0;
+        public static com.qualcomm.robotcore.hardware.PIDFCoefficients PIDF_R =
+                new com.qualcomm.robotcore.hardware.PIDFCoefficients(
+                        35, 0.02, 0, 0);
+        public static com.qualcomm.robotcore.hardware.PIDFCoefficients PIDF_L =
+                new com.qualcomm.robotcore.hardware.PIDFCoefficients(
+                        35, 0.02, 0, 0);
+        // Replace with your distance -> trajectory model when ready.
+        public static ShotModel SHOT_MODEL = distanceInches ->
+                new ShotSolution(HOOD_MIN_ANGLE_RAD, 0.0);
+
+        public interface ShotModel {
+            ShotSolution solve(double distanceInches);
+        }
+
+        public static class ShotSolution {
+            public final double hoodAngleRadians;
+            public final double flywheelVelocity;
+
+            public ShotSolution(double hoodAngleRadians, double flywheelVelocity) {
+                this.hoodAngleRadians = hoodAngleRadians;
+                this.flywheelVelocity = flywheelVelocity;
+            }
+        }
     }
 
     /**
@@ -177,7 +220,15 @@ public class Settings {
         public static final String LEFT_REAR_MOTOR = "leftRear";
         public static final String RIGHT_FRONT_MOTOR = "rightFront";
         public static final String RIGHT_REAR_MOTOR = "rightRear";
-        public static final String BUTTERFLY = "butterfly";
+        public static final String BUTTERFLY_LEFT = "butterflyLeft";
+        public static final String BUTTERFLY_RIGHT = "butterflyRight";
+
+        public static final String HOOD = "hood";
+        public static final String FLYWHEEL_R = "flywheelRight";
+        public static final String FLYWHEEL_L = "flywheelLeft";
+        public static final String YAW_R = "yawRight";
+        public static final String YAW_L = "yawLeft";
+
     }
 
     public static class Autonomous {
@@ -189,6 +240,7 @@ public class Settings {
             public static Pose START_FAR = new Pose();
             public static Pose START_CLOSE = new Pose();
         }
+
         public static class TeleopPresets {
             public static final Pose CLOSE_SHOOT = new Pose(54.92, 86.55, Math.toRadians(130.6));
             public static final Pose FAR_SHOOT = new Pose(60, 18, Math.toRadians(112.75));
