@@ -25,14 +25,17 @@ public class Peripherals {
     public Peripherals(HardwareMap hardwareMap) {
         this.ctrl = PhotonCore.CONTROL_HUB;
         this.exp = PhotonCore.EXPANSION_HUB;
+        this.hardwareMap = hardwareMap;
 
+        setupHubs();
+    }
+
+    private void setupHubs() {
         ctrl.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         exp.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         PhotonCore.enable();
         LynxModule.blinkerPolicy = new BlinkyBlinky();
         setHubColors(PresetColor.RAINBOW);
-
-        this.hardwareMap = hardwareMap;
     }
 
     public void playSound(File f) {

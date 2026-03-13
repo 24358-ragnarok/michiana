@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.sys.hardware;
 
-import static org.firstinspires.ftc.teamcode.config.Settings.Drivetrain.MECANUM_DOWN_POSITION;
-import static org.firstinspires.ftc.teamcode.config.Settings.Drivetrain.TANK_DOWN_POSITION;
+import static org.firstinspires.ftc.teamcode.config.Settings.Drivetrain.LEFT_MECANUM_DOWN_POSITION;
+import static org.firstinspires.ftc.teamcode.config.Settings.Drivetrain.LEFT_TANK_DOWN_POSITION;
+import static org.firstinspires.ftc.teamcode.config.Settings.Drivetrain.RIGHT_MECANUM_DOWN_POSITION;
+import static org.firstinspires.ftc.teamcode.config.Settings.Drivetrain.RIGHT_TANK_DOWN_POSITION;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ftc.FollowerBuilder;
@@ -20,7 +22,8 @@ import org.firstinspires.ftc.teamcode.config.Settings;
  * the traction wheels for tank drive.
  */
 public class ButterflyDrivetrain {
-    private final ServoImplEx butterfly;
+    private final ServoImplEx butterflyLeft;
+    private final ServoImplEx butterflyRight;
     private final HardwareMap hardwareMap;
     /**
      * The PedroPathing follower instance used for path following and teleop control.
@@ -41,7 +44,8 @@ public class ButterflyDrivetrain {
     public ButterflyDrivetrain(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
         follower = createMecanumFollower(hardwareMap);
-        butterfly = hardwareMap.get(ServoImplEx.class, Settings.Hardware.BUTTERFLY);
+        butterflyLeft = hardwareMap.get(ServoImplEx.class, Settings.Hardware.BUTTERFLY_LEFT);
+        butterflyRight = hardwareMap.get(ServoImplEx.class, Settings.Hardware.BUTTERFLY_RIGHT);
         state = ButterflyState.MECANUM;
     }
 
@@ -56,7 +60,8 @@ public class ButterflyDrivetrain {
      * Runs as the game begins.
      */
     public void start() {
-        butterfly.setPosition(MECANUM_DOWN_POSITION);
+        butterflyLeft.setPosition(LEFT_MECANUM_DOWN_POSITION);
+        butterflyRight.setPosition(RIGHT_MECANUM_DOWN_POSITION);
     }
 
     /**
@@ -108,13 +113,15 @@ public class ButterflyDrivetrain {
             return;
         }
         if (targetState == ButterflyState.MECANUM) {
-            butterfly.setPosition(MECANUM_DOWN_POSITION);
+            butterflyLeft.setPosition(LEFT_MECANUM_DOWN_POSITION);
+            butterflyRight.setPosition(RIGHT_MECANUM_DOWN_POSITION);
             follower.pathConstraints = Settings.PedroPathing.Path.MECANUM;
             follower.constants = Settings.PedroPathing.Follower.MECANUM;
             follower.drivetrain = new Mecanum(hardwareMap, Settings.PedroPathing.Drive.MECANUM);
         }
         if (targetState == ButterflyState.TANK) {
-            butterfly.setPosition(TANK_DOWN_POSITION);
+            butterflyLeft.setPosition(LEFT_TANK_DOWN_POSITION);
+            butterflyRight.setPosition(RIGHT_TANK_DOWN_POSITION);
             follower.pathConstraints = Settings.PedroPathing.Path.TANK;
             follower.constants = Settings.PedroPathing.Follower.TANK;
             follower.drivetrain = new TankDrivetrain(hardwareMap, Settings.PedroPathing.Drive.TANK);
