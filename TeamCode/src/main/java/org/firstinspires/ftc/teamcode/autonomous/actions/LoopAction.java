@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.autonomous.actions;
 import org.firstinspires.ftc.teamcode.autonomous.AutonomousAction;
 import org.firstinspires.ftc.teamcode.autonomous.AutonomousSequence;
 import org.firstinspires.ftc.teamcode.config.Settings;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.sys.Robot;
 
 /**
  * An action that repeatedly executes a sub-sequence of actions until a specified time remains.

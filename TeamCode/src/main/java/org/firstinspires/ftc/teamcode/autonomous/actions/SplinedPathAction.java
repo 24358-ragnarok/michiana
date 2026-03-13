@@ -4,7 +4,7 @@ import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 
-import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.sys.Robot;
 
 /**
  * A path action that moves the robot along a smooth spline curve to the target pose.

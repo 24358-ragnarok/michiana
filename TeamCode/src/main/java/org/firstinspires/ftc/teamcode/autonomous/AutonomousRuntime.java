@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import org.firstinspires.ftc.teamcode.util.telemetry.Wizard;
+
 /**
  * Enumeration of available autonomous strategies.
  * <p>
  * Each enum constant represents a distinct autonomous routine (e.g., "Safe", "Aggressive").
  * It defines how to build the sequence for both "Far" and "Close" starting positions.
  * <p>
- * This allows the {@link org.firstinspires.ftc.teamcode.util.Wizard} to cycle through
+ * This allows the {@link Wizard} to cycle through
  * available strategies and select the appropriate one based on the robot's starting position.
  */
 public enum AutonomousRuntime {

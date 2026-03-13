@@ -1,11 +1,12 @@
-package org.firstinspires.ftc.teamcode.hardware;
+package org.firstinspires.ftc.teamcode.sys;
 
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.photon.PhotonCore;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.sys.hardware.ButterflyDrivetrain;
+import org.firstinspires.ftc.teamcode.sys.software.Peripherals;
 import org.firstinspires.ftc.teamcode.util.Controller;
 import org.firstinspires.ftc.teamcode.util.telemetry.Logging;
 
@@ -33,6 +34,11 @@ public class Robot {
     public final ButterflyDrivetrain dt;
 
     /**
+     * You know, because we're fancy like that.
+     */
+    public final Peripherals peripherals;
+
+    /**
      * The elapsed time since the last update, in seconds.
      */
     public volatile double elapsedTime;
@@ -49,14 +55,10 @@ public class Robot {
      * @param gamepad2    The second gamepad.
      */
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
-        // Configure bulk caching to MANUAL mode for better performance
-        PhotonCore.CONTROL_HUB.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
-        PhotonCore.EXPANSION_HUB.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
-        PhotonCore.enable();
-
         log = new Logging(telemetry);
         ctrl = new Controller(gamepad1, gamepad2);
         dt = new ButterflyDrivetrain(hardwareMap);
+        peripherals = new Peripherals(hardwareMap);
     }
 
     /**

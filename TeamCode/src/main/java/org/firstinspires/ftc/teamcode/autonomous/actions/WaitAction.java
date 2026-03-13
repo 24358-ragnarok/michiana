@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.autonomous.actions;
 import com.pedropathing.util.Timer;
 
 import org.firstinspires.ftc.teamcode.autonomous.AutonomousAction;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.sys.Robot;
 
 /**
  * An action that does nothing but wait for a specified duration.

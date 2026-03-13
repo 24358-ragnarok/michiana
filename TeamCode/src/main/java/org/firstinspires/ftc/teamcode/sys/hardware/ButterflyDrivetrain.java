@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.hardware;
+package org.firstinspires.ftc.teamcode.sys.hardware;
 
 import static org.firstinspires.ftc.teamcode.config.Settings.Drivetrain.MECANUM_DOWN_POSITION;
 import static org.firstinspires.ftc.teamcode.config.Settings.Drivetrain.TANK_DOWN_POSITION;

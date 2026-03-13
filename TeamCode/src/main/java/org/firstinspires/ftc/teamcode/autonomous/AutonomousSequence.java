@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.pedropathing.util.Timer;
 
-import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.sys.Robot;
 
 import java.util.ArrayList;
 import java.util.Arrays;

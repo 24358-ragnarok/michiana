@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.autonomous.actions;
 import com.pedropathing.geometry.Pose;
 
 import org.firstinspires.ftc.teamcode.autonomous.AutonomousAction;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.sys.Robot;
 
 /**
  * An action that holds the robot at a specific pose indefinitely.

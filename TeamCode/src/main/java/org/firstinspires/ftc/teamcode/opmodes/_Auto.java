@@ -7,8 +7,8 @@ import org.firstinspires.ftc.teamcode.autonomous.AutonomousRuntime;
 import org.firstinspires.ftc.teamcode.autonomous.AutonomousSequence;
 import org.firstinspires.ftc.teamcode.config.MatchState;
 import org.firstinspires.ftc.teamcode.config.Settings;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.util.Wizard;
+import org.firstinspires.ftc.teamcode.sys.Robot;
+import org.firstinspires.ftc.teamcode.util.telemetry.Wizard;
 
 /**
  * The main Autonomous mode.

@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous.actions;
 
 import org.firstinspires.ftc.teamcode.autonomous.AutonomousAction;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.sys.Robot;
 
 import java.util.Arrays;
 import java.util.List;

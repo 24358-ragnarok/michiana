@@ -40,6 +40,8 @@ public class Settings {
      */
     public static class Flags {
         public static final boolean DEBUG = true;
+
+        public static final boolean SFX = true;
     }
 
     /**

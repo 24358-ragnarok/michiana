@@ -1,9 +1,7 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.util.telemetry;
 
 import org.firstinspires.ftc.teamcode.config.MatchState;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.util.telemetry.LogLine;
-import org.firstinspires.ftc.teamcode.util.telemetry.TextFormat;
+import org.firstinspires.ftc.teamcode.sys.Robot;
 
 /**
  * Handles the pre-match configuration process during the init_loop.
