@@ -229,6 +229,7 @@ public class Settings {
         public static final String FLYWHEEL_L = "flywheelLeft";
         public static final String YAW_R = "yawRight";
         public static final String YAW_L = "yawLeft";
+        public static final String INTAKE_MOTOR = "intakeMotor";
 
     }
 

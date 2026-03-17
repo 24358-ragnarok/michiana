@@ -7,6 +7,7 @@ import com.seattlesolvers.solverslib.photon.PhotonCore;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.sys.hardware.ButterflyDrivetrain;
 import org.firstinspires.ftc.teamcode.sys.hardware.HoodedLauncher;
+import org.firstinspires.ftc.teamcode.sys.hardware.Intake;
 import org.firstinspires.ftc.teamcode.sys.software.Peripherals;
 import org.firstinspires.ftc.teamcode.util.Controller;
 import org.firstinspires.ftc.teamcode.util.telemetry.Logging;
@@ -39,9 +40,13 @@ public class Robot {
      */
     public final Peripherals peripherals;
     /**
-     * To launcht the balls...
+     * To launch the balls...
      */
     public final HoodedLauncher launcher;
+    /**
+     * To get the balls
+     */
+    public final Intake intake;
     /**
      * The elapsed time since the last update, in seconds.
      */
@@ -63,6 +68,7 @@ public class Robot {
         ctrl = new Controller(gamepad1, gamepad2);
         dt = new ButterflyDrivetrain(hardwareMap);
         launcher = new HoodedLauncher(hardwareMap);
+        intake = new Intake(hardwareMap);
         peripherals = new Peripherals(hardwareMap);
     }
 
