@@ -22,7 +22,7 @@ public class HoodedLauncher {
     private final ServoImplEx hoodServo;
     private final YawUnion yaw;
     private final FlywheelUnion flywheel;
-    private Settings.Launcher.RPMSolutionModel rpmSolutionModel = Settings.Launcher.RPM_SOLUTION_MODEL;
+    private final Settings.Launcher.RPMSolutionModel rpmSolutionModel = Settings.Launcher.RPM_SOLUTION_MODEL;
 
     public HoodedLauncher(HardwareMap hardwareMap) {
         hoodServo = hardwareMap.get(ServoImplEx.class, Settings.Hardware.HOOD);
@@ -59,10 +59,6 @@ public class HoodedLauncher {
                 Settings.Launcher.YAW_TICKS_PER_REV,
                 Settings.Launcher.YAW_TICK_DIRECTION
         ));
-    }
-
-    public static Pose getTargetPose() {
-        return targetPose;
     }
 
     public static void setTargetPose(Pose targetPose) {
@@ -138,10 +134,6 @@ public class HoodedLauncher {
         return Math.atan2(requiredRelativeVy, requiredRelativeVx);
     }
 
-    public void update(Pose botPose) {
-        update(botPose, null);
-    }
-
     public void update(Pose botPose, Vector botVelocity) {
         if (botPose == null || targetPose == null) {
             return;
@@ -177,13 +169,7 @@ public class HoodedLauncher {
         flywheel.update();
     }
 
-    public void setRpmSolutionModel(Settings.Launcher.RPMSolutionModel rpmSolutionModel) {
-        if (rpmSolutionModel != null) {
-            this.rpmSolutionModel = rpmSolutionModel;
-        }
-    }
-
-    public void setHoodAngleRadians(double hoodAngleRadians) {
+    private void setHoodAngleRadians(double hoodAngleRadians) {
         double clamped = Range.clip(
                 hoodAngleRadians,
                 Settings.Launcher.HOOD_MIN_ANGLE_RAD,
@@ -194,10 +180,6 @@ public class HoodedLauncher {
                 + (normalized
                 * (Settings.Launcher.HOOD_MAX_SERVO_POSITION - Settings.Launcher.HOOD_MIN_SERVO_POSITION));
         hoodServo.setPosition(Range.clip(servoPosition, 0.0, 1.0));
-    }
-
-    public void setFlywheelVelocity(double flywheelVelocity) {
-        flywheel.setTargetFlywheelRPM(flywheelVelocity);
     }
 
     public void stop() {
