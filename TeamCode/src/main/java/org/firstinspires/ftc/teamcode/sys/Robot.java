@@ -87,7 +87,7 @@ public class Robot {
         PhotonCore.EXPANSION_HUB.clearBulkCache();
 
         dt.update();
-        launcher.update(dt.follower.getPose());
+        launcher.update(dt.follower.getPose(), dt.follower.getVelocity());
         log.update(dt.follower.getPose());
     }
 

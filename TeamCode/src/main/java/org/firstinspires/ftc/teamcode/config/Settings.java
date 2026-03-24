@@ -162,6 +162,8 @@ public class Settings {
     }
 
     public static class Launcher {
+        public static final double REV_THROUGH_BORE_V2_COUNTS_PER_REV = 8192.0;
+
         // Hood calibration: map 10-50 degrees into servo range 0.2-0.8.
         public static double HOOD_MIN_ANGLE_RAD = Math.toRadians(10.0);
         public static double HOOD_MAX_ANGLE_RAD = Math.toRadians(50.0);
@@ -171,35 +173,46 @@ public class Settings {
         // flywheel velocity * motor-to-flywheel ratio = motor velocity target.
         public static double GEAR_RATIO_MOTOR_TO_FLYWHEEL = 1.0;
         public static double FLYWHEEL_TICKS_PER_REV = 28.0;
-        // Per-servo PIDF used by software loop for the shared yaw axle.
-        public static com.qualcomm.robotcore.hardware.PIDFCoefficients YAW_PIDF_R =
-                new com.qualcomm.robotcore.hardware.PIDFCoefficients(
-                        1.8, 0.0, 0.06, 0.0);
-        public static com.qualcomm.robotcore.hardware.PIDFCoefficients YAW_PIDF_L =
-                new com.qualcomm.robotcore.hardware.PIDFCoefficients(
-                        1.8, 0.0, 0.06, 0.0);
-        public static double YAW_MAX_POWER = 1.0;
-        public static com.qualcomm.robotcore.hardware.PIDFCoefficients PIDF_R =
-                new com.qualcomm.robotcore.hardware.PIDFCoefficients(
-                        35, 0.02, 0, 0);
-        public static com.qualcomm.robotcore.hardware.PIDFCoefficients PIDF_L =
-                new com.qualcomm.robotcore.hardware.PIDFCoefficients(
-                        35, 0.02, 0, 0);
-        // Replace with your distance -> trajectory model when ready.
-        public static ShotModel SHOT_MODEL = distanceInches ->
-                new ShotSolution(HOOD_MIN_ANGLE_RAD, 0.0);
 
-        public interface ShotModel {
-            ShotSolution solve(double distanceInches);
+        // Geometry for hood "point at goal" behavior.
+        public static double LAUNCHER_HEIGHT_INCHES = 9.0;
+        public static double GOAL_HEIGHT_INCHES = 36.0;
+        public static double HOOD_ANGLE_OFFSET_RAD = 0.0;
+        // Per-servo PIDF used by software loop for the shared yaw axle.
+        public static com.qualcomm.robotcore.hardware.PIDFCoefficients YAW_PIDF_R = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
+                1.8, 0.0, 0.06, 0.0);
+        public static com.qualcomm.robotcore.hardware.PIDFCoefficients YAW_PIDF_L = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
+                1.8, 0.0, 0.06, 0.0);
+        public static double YAW_MAX_POWER = 1.0;
+        // Infinite-yaw tick conversion settings.
+        // angleRad = ((ticks - YAW_ZERO_TICKS) / YAW_TICKS_PER_REV) * 2pi *
+        // YAW_TICK_DIRECTION
+        public static double YAW_ZERO_TICKS = 0.0;
+        public static double YAW_TICKS_PER_REV = REV_THROUGH_BORE_V2_COUNTS_PER_REV;
+        public static double YAW_TICK_DIRECTION = 1.0;
+        public static boolean RESET_YAW_ENCODER_ON_INIT = true;
+        public static com.qualcomm.robotcore.hardware.PIDFCoefficients PIDF_R = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
+                35, 0.02, 0, 0);
+        public static com.qualcomm.robotcore.hardware.PIDFCoefficients PIDF_L = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
+                35, 0.02, 0, 0);
+
+        // Shoot-on-the-move compensation.
+        // Converts flywheel RPM from model into projectile linear speed (inches/sec).
+        public static boolean USE_MOTION_COMPENSATION = true;
+        public static double FLYWHEEL_RPM_TO_EXIT_SPEED = 0.05;
+
+        // Replace with your distance -> RPM model when ready.
+        public static RPMSolutionModel RPM_SOLUTION_MODEL = distanceInches -> new RPMSolution(3000.0);
+
+        public interface RPMSolutionModel {
+            RPMSolution solve(double distanceInches);
         }
 
-        public static class ShotSolution {
-            public final double hoodAngleRadians;
-            public final double flywheelVelocity;
+        public static class RPMSolution {
+            public final double flywheelRpm;
 
-            public ShotSolution(double hoodAngleRadians, double flywheelVelocity) {
-                this.hoodAngleRadians = hoodAngleRadians;
-                this.flywheelVelocity = flywheelVelocity;
+            public RPMSolution(double flywheelRpm) {
+                this.flywheelRpm = flywheelRpm;
             }
         }
     }
@@ -229,6 +242,7 @@ public class Settings {
         public static final String FLYWHEEL_L = "flywheelLeft";
         public static final String YAW_R = "yawRight";
         public static final String YAW_L = "yawLeft";
+        public static final String YAW_ENCODER = "yawEncoder";
         public static final String INTAKE_MOTOR = "intakeMotor";
 
     }
