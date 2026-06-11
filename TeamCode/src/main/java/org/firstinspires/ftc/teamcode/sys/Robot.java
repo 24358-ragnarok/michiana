@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.photon.PhotonCore;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.sys.hardware.ButterflyDrivetrain;
-import org.firstinspires.ftc.teamcode.sys.hardware.HoodedLauncher;
+import org.firstinspires.ftc.teamcode.sys.hardware.Drivetrain;
 import org.firstinspires.ftc.teamcode.sys.hardware.Intake;
+import org.firstinspires.ftc.teamcode.sys.hardware.Turret;
 import org.firstinspires.ftc.teamcode.sys.software.Peripherals;
 import org.firstinspires.ftc.teamcode.util.Controller;
 import org.firstinspires.ftc.teamcode.util.telemetry.Logging;
@@ -33,7 +33,7 @@ public class Robot {
     /**
      * The drivetrain subsystem, supporting both Mecanum and Tank drive modes.
      */
-    public final ButterflyDrivetrain dt;
+    public final Drivetrain dt;
 
     /**
      * You know, because we're fancy like that.
@@ -42,7 +42,7 @@ public class Robot {
     /**
      * To launch the balls...
      */
-    public final HoodedLauncher launcher;
+    public final Turret launcher;
     /**
      * To get the balls
      */
@@ -66,8 +66,8 @@ public class Robot {
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
         log = new Logging(telemetry);
         ctrl = new Controller(gamepad1, gamepad2);
-        dt = new ButterflyDrivetrain(hardwareMap);
-        launcher = new HoodedLauncher(hardwareMap);
+        dt = new Drivetrain(hardwareMap);
+        launcher = new Turret(hardwareMap);
         intake = new Intake(hardwareMap);
         peripherals = new Peripherals(hardwareMap);
     }

@@ -73,22 +73,6 @@ public class Settings {
                             new FilteredPIDFCoefficients(0.5, 0.0, 0.01, 0.6, 0.0))
                     .secondaryDrivePIDFCoefficients(
                             new FilteredPIDFCoefficients(0.08, 0.001, 0.001, 0.6, 0.0));
-
-            public static final FollowerConstants TANK = common()
-                    .forwardZeroPowerAcceleration(-37.5)
-                    .lateralZeroPowerAcceleration(-65.7)
-                    .translationalPIDFCoefficients(
-                            new PIDFCoefficients(0.13, 0.001, 0.02, 0.02))
-                    .secondaryTranslationalPIDFCoefficients(
-                            new PIDFCoefficients(0.1, 0.0001, 0.02, 0.02))
-                    .headingPIDFCoefficients(
-                            new PIDFCoefficients(0.7, 0.001, 0.05, 0.03))
-                    .secondaryHeadingPIDFCoefficients(
-                            new PIDFCoefficients(1.65, 0.001, 0.015, 0.02))
-                    .drivePIDFCoefficients(
-                            new FilteredPIDFCoefficients(0.5, 0.0, 0.01, 0.6, 0.0))
-                    .secondaryDrivePIDFCoefficients(
-                            new FilteredPIDFCoefficients(0.08, 0.001, 0.001, 0.6, 0.0));
         }
 
         public static class Drive {
@@ -108,11 +92,6 @@ public class Settings {
             }
 
             public static final MecanumConstants MECANUM = common()
-                    .xVelocity(86)
-                    .yVelocity(60);
-
-            /* ---- TANK ---- */
-            public static final MecanumConstants TANK = common()
                     .xVelocity(86)
                     .yVelocity(60);
         }
@@ -141,27 +120,10 @@ public class Settings {
                     1.00,
                     10,
                     1);
-            public static PathConstraints TANK = new PathConstraints(
-                    0.995,
-                    0.01,
-                    0.01,
-                    0.001,
-                    80,
-                    1.00,
-                    10,
-                    1);
         }
     }
 
-    public static class Drivetrain {
-        // Butterfly Drivetrain Servo Positions
-        public static double RIGHT_MECANUM_DOWN_POSITION = 0.2;
-        public static double RIGHT_TANK_DOWN_POSITION = 0.6;
-        public static double LEFT_MECANUM_DOWN_POSITION = 0.6;
-        public static double LEFT_TANK_DOWN_POSITION = 0.2;
-    }
-
-    public static class Launcher {
+    public static class Turret {
         public static final double REV_THROUGH_BORE_V2_COUNTS_PER_REV = 8192.0;
 
         // Hood calibration: map 10-50 degrees into servo range 0.2-0.8.
@@ -240,9 +202,7 @@ public class Settings {
         public static final String HOOD = "hood";
         public static final String FLYWHEEL_R = "flywheelRight";
         public static final String FLYWHEEL_L = "flywheelLeft";
-        public static final String YAW_R = "yawRight";
-        public static final String YAW_L = "yawLeft";
-        public static final String YAW_ENCODER = "yawEncoder";
+        public static final String YAW = "yaw";
         public static final String INTAKE_MOTOR = "intakeMotor";
 
     }

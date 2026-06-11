@@ -13,46 +13,46 @@ import java.util.Arrays;
 public class Classifier {
     private static final int MAX_CAPACITY = 9;
     private final Motif motif;
-	private final Artifact[] state; // Fixed size buffer for stored balls
-	private int ballCount; // Number of balls currently stored
+    private final Artifact[] state; // Fixed size buffer for stored balls
+    private int ballCount; // Number of balls currently stored
 
     /**
-	 * Initializes the Classifier with a known Motif and an initial set of Artifacts.
+     * Initializes the Classifier with a known Motif and an initial set of Artifacts.
      *
-	 * @param classifierMotif The determined Motif pattern.
-	 * @param initial         An array of Artifacts already in the robot's possession.
+     * @param classifierMotif The determined Motif pattern.
+     * @param initial         An array of Artifacts already in the robot's possession.
      */
     public Classifier(Motif classifierMotif, Artifact[] initial) {
         this.motif = classifierMotif;
         this.state = new Artifact[MAX_CAPACITY];
         this.ballCount = 0;
 
-		// Copy initial artifacts up to capacity
+        // Copy initial artifacts up to capacity
         if (initial != null) {
             int toCopy = Math.min(initial.length, MAX_CAPACITY);
             System.arraycopy(initial, 0, this.state, 0, toCopy);
             this.ballCount = toCopy;
         }
 
-		// Fill remaining slots with NONE
+        // Fill remaining slots with NONE
         for (int i = this.ballCount; i < MAX_CAPACITY; i++) {
             this.state[i] = Artifact.NONE;
         }
     }
 
     /**
-	 * Initializes the Classifier with a known Motif and no initial artifacts.
-	 *
-	 * @param classifierMotif The determined Motif pattern.
-	 */
+     * Initializes the Classifier with a known Motif and no initial artifacts.
+     *
+     * @param classifierMotif The determined Motif pattern.
+     */
     public Classifier(Motif classifierMotif) {
         this(classifierMotif, new Artifact[0]);
     }
 
     /**
-	 * Creates an empty Classifier with an UNKNOWN motif.
-	 * <p>
-	 * Useful for initialization before the randomization is detected.
+     * Creates an empty Classifier with an UNKNOWN motif.
+     * <p>
+     * Useful for initialization before the randomization is detected.
      *
      * @return A new, empty Classifier instance.
      */
@@ -65,10 +65,10 @@ public class Classifier {
     }
 
     /**
-	 * Adds an artifact to the robot's storage.
+     * Adds an artifact to the robot's storage.
      *
-	 * @param ball The Artifact to add.
-	 * @return true if added successfully, false if storage is full.
+     * @param ball The Artifact to add.
+     * @return true if added successfully, false if storage is full.
      */
     public boolean addBall(Artifact ball) {
         if (ballCount < MAX_CAPACITY) {
@@ -76,7 +76,7 @@ public class Classifier {
             ballCount++;
             return true;
         }
-		return false;
+        return false;
     }
 
     public Motif getMotif() {
@@ -84,9 +84,9 @@ public class Classifier {
     }
 
     /**
-	 * Gets the current buffer of stored artifacts.
+     * Gets the current buffer of stored artifacts.
      *
-	 * @return The internal array of artifacts. Note: Contains MAX_CAPACITY elements.
+     * @return The internal array of artifacts. Note: Contains MAX_CAPACITY elements.
      */
     public Artifact[] getState() {
         return state;
@@ -97,12 +97,12 @@ public class Classifier {
     }
 
     /**
-	 * Determines the color of the next artifact needed to satisfy the motif pattern.
-	 * <p>
-	 * Calculates the position in the repeating motif sequence based on the number of
-	 * balls already collected.
+     * Determines the color of the next artifact needed to satisfy the motif pattern.
+     * <p>
+     * Calculates the position in the repeating motif sequence based on the number of
+     * balls already collected.
      *
-	 * @return The desired {@link Artifact.Color}, or NONE if the motif is unknown.
+     * @return The desired {@link Artifact.Color}, or NONE if the motif is unknown.
      */
     public Artifact.Color getNextDesiredColor() {
         if (motif == null || motif == Motif.UNKNOWN || motif.state.length == 0) {
