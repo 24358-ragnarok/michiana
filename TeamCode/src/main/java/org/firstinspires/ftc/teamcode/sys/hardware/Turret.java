@@ -50,6 +50,13 @@ public class Turret {
         updateYaw(botPose, botVelocity);
     }
 
+    /**
+     * Checks if the turret is ready to fire (Yaw on target and Flywheel at speed).
+     */
+    public boolean isReady() {
+        return yaw.onTarget() && flywheel.isAtSpeed();
+    }
+
     public void updateYaw(Pose botPose, Vector botVelocity) {
         if (botPose == null || targetPose == null) {
             return;
@@ -127,6 +134,16 @@ public class Turret {
 
         public void start() {
             this.motor.setPower(Settings.Turret.YAW_MAX_POWER);
+        }
+
+        public void setTargetAngle(double angleDeg) {
+            double targetTicks = angleToTicks(angleDeg);
+            motor.setTargetPosition(
+                    (int) Range.clip(targetTicks, Settings.Turret.YAW_MIN_TICKS, Settings.Turret.YAW_MAX_TICKS));
+        }
+
+        public boolean onTarget() {
+            return Math.abs(motor.getCurrentPosition() - motor.getTargetPosition()) < 15; // ~0.7 degrees tolerance
         }
 
         public void update(Pose botPose, Vector botVelocity, Pose targetPose, double hoodAngle, double flywheelRPM) {
@@ -225,6 +242,14 @@ public class Turret {
             }
             rightMotor.setVelocity(motorVelocity);
             leftMotor.setVelocity(motorVelocity);
+        }
+
+        public boolean isAtSpeed() {
+            if (targetRPM < 100)
+                return true; // Effectively off
+            double currentRPM = (rightMotor.getVelocity() * 60.0)
+                    / (Settings.Turret.GEAR_RATIO_MOTOR_TO_FLYWHEEL * Settings.Turret.FLYWHEEL_TICKS_PER_REV);
+            return Math.abs(currentRPM - targetRPM) < 150; // 150 RPM tolerance
         }
 
         public double getTargetRPM() {
