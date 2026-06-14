@@ -36,7 +36,7 @@ public class Wizard {
     public void refresh() {
         // If settings are confirmed, only allow START to unlock; ignore other inputs
         if (confirmed) {
-            if (bot.ctrl.main.start().onTrue()) {
+            if (bot.ctrl.main.startWasPressed()) {
                 confirmed = false;
             }
             addTelemetry();
@@ -44,31 +44,31 @@ public class Wizard {
         }
 
         // Handle Alliance Color Selection
-        if (bot.ctrl.main.b().onTrue()) {
+        if (bot.ctrl.main.bWasPressed()) {
             MatchState.isBlue = false;
         }
-        if (bot.ctrl.main.x().onTrue()) {
+        if (bot.ctrl.main.xWasPressed()) {
             MatchState.isBlue = true;
         }
 
         // Handle Starting Position Selection
-        if (bot.ctrl.main.a().onTrue()) {
+        if (bot.ctrl.main.aWasPressed()) {
             setStartingPositionWithRuntimeCheck(false); // Close
         }
-        if (bot.ctrl.main.y().onTrue()) {
+        if (bot.ctrl.main.yWasPressed()) {
             setStartingPositionWithRuntimeCheck(true); // Far
         }
 
         // Handle Confirmation
-        if (bot.ctrl.main.start().onTrue()) {
+        if (bot.ctrl.main.startWasPressed()) {
             confirmed = !confirmed;
         }
 
         // Handle Runtime Selection (cycling through compatible options)
-        if (bot.ctrl.main.dpadRight().onTrue()) {
+        if (bot.ctrl.main.dpadRightWasPressed()) {
             MatchState.nextAutonomousRuntimeForCurrentPosition();
         }
-        if (bot.ctrl.main.dpadLeft().onTrue()) {
+        if (bot.ctrl.main.dpadLeftWasPressed()) {
             MatchState.previousAutonomousRuntimeForCurrentPosition();
         }
 

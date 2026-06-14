@@ -45,7 +45,8 @@ public class _Auto extends OpMode {
      */
     @Override
     public void init_loop() {
-        // bot.log.drawRobot(MatchState.getAutonomousRuntime());
+        bot.log.drawRobot(MatchState.getStartsFar() ?
+                Settings.Positions.BotPoses.START_FAR : Settings.Positions.BotPoses.START_CLOSE);
         wizard.refresh();
         bot.log.update();
     }
@@ -57,7 +58,7 @@ public class _Auto extends OpMode {
     public void start() {
         bot.dt.follower.setStartingPose(MatchState.getStartsFar() ?
                 Settings.Positions.BotPoses.START_FAR : Settings.Positions.BotPoses.START_CLOSE);
-        bot.start();
+        bot.start(time);
 
         AutonomousRuntime runtime = MatchState.getAutonomousRuntime();
         if (MatchState.getStartsFar()) {

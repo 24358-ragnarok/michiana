@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.ftccommon.external.OnCreateEventLoop;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.util.shooter.PolynomialShooterModels;
 import org.psilynx.psikit.ftc.autolog.PsiKitAutoLogSettings;
 
 /**
@@ -25,14 +26,6 @@ import org.psilynx.psikit.ftc.autolog.PsiKitAutoLogSettings;
  * pathing constraints, field dimensions, and other tunable parameters.
  */
 public class Settings {
-    /**
-     * Configures the PsiKit AutoLog settings when the event loop is created.
-     */
-    @OnCreateEventLoop
-    public static void configure(Context context, FtcEventLoop ftcEventLoop) {
-        System.setProperty(PsiKitAutoLogSettings.PROPERTY_RLOG_PORT, Flags.DEBUG ? "5900" : "0");
-        PsiKitAutoLogSettings.enabledByDefault = Flags.DEBUG;
-    }
 
     /**
      * General flags for controlling robot behavior.
@@ -140,10 +133,16 @@ public class Settings {
         public static double LAUNCHER_HEIGHT_INCHES = 9.0;
         public static double GOAL_HEIGHT_INCHES = 36.0;
         public static double HOOD_ANGLE_OFFSET_RAD = 0.0;
+        public static double YAW_MIN_TICKS = -2000;
+        public static double YAW_MAX_TICKS = 2000;
+        public static double YAW_MIN_ANGLE_DEG = -90.0;
+        public static double YAW_MAX_ANGLE_DEG = 90.0;
+
+        public static double TUNG_OPEN_POSITION = 0.0;
+        public static double TUNG_CLOSED_POSITION = 1.0;
+
         // Per-servo PIDF used by software loop for the shared yaw axle.
-        public static com.qualcomm.robotcore.hardware.PIDFCoefficients YAW_PIDF_R = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
-                1.8, 0.0, 0.06, 0.0);
-        public static com.qualcomm.robotcore.hardware.PIDFCoefficients YAW_PIDF_L = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
+        public static com.qualcomm.robotcore.hardware.PIDFCoefficients YAW_PIDF = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
                 1.8, 0.0, 0.06, 0.0);
         public static double YAW_MAX_POWER = 1.0;
         // Infinite-yaw tick conversion settings.
@@ -163,11 +162,44 @@ public class Settings {
         public static boolean USE_MOTION_COMPENSATION = true;
         public static double FLYWHEEL_RPM_TO_EXIT_SPEED = 0.05;
 
-        // Replace with your distance -> RPM model when ready.
-        public static RPMSolutionModel RPM_SOLUTION_MODEL = distanceInches -> new RPMSolution(3000.0);
+        /**
+         * Polynomial degree used by {@link org.firstinspires.ftc.teamcode.opmodes.SolutionTuner}
+         * and the default coefficient arrays below.
+         * <p>
+         * Model form: c0 + c1*d + c2*d^2 + ... where d is horizontal distance in inches.
+         */
+        public static int SOLUTION_POLYNOMIAL_DEGREE = 2;
+
+        /**
+         * Hood angle model coefficients (radians). Paste updated values from SolutionTuner.
+         */
+        public static double[] ANGLE_COEFFICIENTS = PolynomialShooterModels.defaultAngleCoefficients();
+
+        /**
+         * Flywheel RPM model coefficients. Paste updated values from SolutionTuner.
+         */
+        public static double[] RPM_COEFFICIENTS = PolynomialShooterModels.defaultRpmCoefficients();
+
+        public static AngleSolutionModel ANGLE_SOLUTION_MODEL =
+                PolynomialShooterModels.angleFromCoefficients(ANGLE_COEFFICIENTS);
+
+        public static RPMSolutionModel RPM_SOLUTION_MODEL =
+                PolynomialShooterModels.rpmFromCoefficients(RPM_COEFFICIENTS);
+
+        public interface AngleSolutionModel {
+            AngleSolution solve(double distanceInches);
+        }
 
         public interface RPMSolutionModel {
             RPMSolution solve(double distanceInches);
+        }
+
+        public static class AngleSolution {
+            public final double angleRadians;
+
+            public AngleSolution(double angleRadians) {
+                this.angleRadians = angleRadians;
+            }
         }
 
         public static class RPMSolution {
@@ -196,19 +228,19 @@ public class Settings {
         public static final String LEFT_REAR_MOTOR = "leftRear";
         public static final String RIGHT_FRONT_MOTOR = "rightFront";
         public static final String RIGHT_REAR_MOTOR = "rightRear";
-        public static final String BUTTERFLY_LEFT = "butterflyLeft";
-        public static final String BUTTERFLY_RIGHT = "butterflyRight";
 
         public static final String HOOD = "hood";
         public static final String FLYWHEEL_R = "flywheelRight";
         public static final String FLYWHEEL_L = "flywheelLeft";
         public static final String YAW = "yaw";
-        public static final String INTAKE_MOTOR = "intakeMotor";
+        public static final String TUNG = "tung";
+        public static final String INTAKE_MOTOR = "intake";
 
     }
 
     public static class Autonomous {
         public static final double DURATION = 30;
+        public static final long LAUNCH_DURATION_MS = 1000;
     }
 
     public static class Positions {

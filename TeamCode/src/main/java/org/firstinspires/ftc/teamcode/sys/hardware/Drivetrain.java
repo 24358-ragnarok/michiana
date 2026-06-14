@@ -5,6 +5,7 @@ import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.config.MatchState;
 import org.firstinspires.ftc.teamcode.config.Settings;
 
 /**
@@ -60,7 +61,7 @@ public class Drivetrain {
      * @param rotation The rotation power.
      */
     public void drive(double drive, double strafe, double rotation) {
-        if (follower.isBusy()) {
+        if (!follower.isTeleopDrive()) {
             follower.startTeleOpDrive();
         }
         follower.setTeleOpDrive(drive, strafe, rotation);

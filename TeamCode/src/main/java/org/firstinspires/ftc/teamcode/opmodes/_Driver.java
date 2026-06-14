@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.config.MatchState;
+import org.firstinspires.ftc.teamcode.config.Settings;
 import org.firstinspires.ftc.teamcode.sys.Robot;
 
 /**
@@ -41,7 +42,9 @@ public class _Driver extends OpMode {
      */
     @Override
     public void start() {
-        bot.start();
+        bot.dt.follower.setStartingPose(MatchState.getStartsFar() ?
+                Settings.Positions.BotPoses.START_FAR : Settings.Positions.BotPoses.START_CLOSE);
+        bot.start(time);
     }
 
     /**
@@ -55,10 +58,26 @@ public class _Driver extends OpMode {
 
         // Drive the robot using the left stick for translation and right stick for rotation
         bot.dt.drive(
-                bot.ctrl.main.leftStickY().state(),
-                bot.ctrl.main.leftStickX().state(),
-                bot.ctrl.main.rightStickX().state()
+                -bot.ctrl.main.left_stick_y,
+                -bot.ctrl.main.left_stick_x,
+                -bot.ctrl.main.right_stick_x
         );
+        if (bot.ctrl.sub.right_trigger > 0.01) {
+            bot.intake.in();
+        } else if (bot.ctrl.sub.left_trigger > 0.01) {
+            bot.intake.out();
+        } else {
+            bot.intake.stop();
+        }
+        if (bot.ctrl.sub.dpadUpWasPressed()) {
+            bot.launcher.getTung().open();
+        }
+        if (bot.ctrl.sub.dpadDownWasPressed()) {
+            bot.launcher.getTung().close();
+        }
+        if (bot.ctrl.sub.backWasPressed()) {
+            bot.launcher.getFlywheel().toggle();
+        }
     }
 
     /**

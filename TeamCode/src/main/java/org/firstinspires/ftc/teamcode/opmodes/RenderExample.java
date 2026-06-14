@@ -29,17 +29,16 @@ public class RenderExample extends OpMode {
     @Override
     public void init() {
         bot = new Robot(hardwareMap, telemetry, gamepad1, gamepad2);
-        // Initialize logging (though Robot already does this, we do it here to show explicit usage if needed)
-        // In a real OpMode, use bot.log
         dashboardItem = telemetry.addData("", "");
+        bot.peripherals.speak("stupid little chud, you are in the wrong zone.");
     }
 
     @Override
     public void loop() {
         // Simulate robot movement based on joystick input
-        poseX += bot.ctrl.main.leftStickX().state() * 2.0;
-        poseY -= bot.ctrl.main.leftStickY().state() * 2.0;
-        poseHeading -= bot.ctrl.main.rightStickX().state() * 0.1;
+        poseX += bot.ctrl.main.left_stick_x * 2.0;
+        poseY -= bot.ctrl.main.left_stick_y * 2.0;
+        poseHeading -= bot.ctrl.main.right_stick_x * 0.1;
 
         // Clamp position to field boundaries (144x144 inches)
         poseX = Math.max(0, Math.min(144, poseX));
@@ -50,12 +49,12 @@ public class RenderExample extends OpMode {
 
         dashboardHtml.append(TextFormat.header("RAGNAROK CONTROL SUBSYSTEM_v1.0")).append("<br><br>");
 
-        dashboardHtml.append(TextFormat.subheader("Hardware Status")).append("<br>");
-        dashboardHtml.append(TextFormat.bold("Drivetrain: ")).append(TextFormat.success("NOMINAL")).append("<br>");
-        dashboardHtml.append(TextFormat.bold("Intake: ")).append(TextFormat.warn("STALLED")).append("<br>");
+        dashboardHtml.append(TextFormat.subheader("Hardware Status")).append(TextFormat.newline());
+        dashboardHtml.append(TextFormat.bold("Drivetrain: ")).append(TextFormat.success("NOMINAL")).append(TextFormat.newline());
+        dashboardHtml.append(TextFormat.bold("Intake: ")).append(TextFormat.warn("STALLED")).append(TextFormat.newline());
         dashboardHtml.append(TextFormat.bold("Vision: ")).append(TextFormat.error("DISCONNECTED")).append("<br><br>");
 
-        dashboardHtml.append(TextFormat.subheader("Odometry Localization")).append("<br>");
+        dashboardHtml.append(TextFormat.subheader("Odometry Localization")).append("TextFormat.newline()");
         LogLine poseLine = new LogLine()
                 .appendBold("X: ")
                 .appendColor(String.format("%5.1f", poseX), "#448aff")

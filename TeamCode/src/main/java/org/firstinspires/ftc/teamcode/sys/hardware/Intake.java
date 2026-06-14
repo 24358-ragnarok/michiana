@@ -12,6 +12,9 @@ public class Intake {
         motor = hardwareMap.get(DcMotorEx.class, Settings.Hardware.INTAKE_MOTOR);
     }
 
+    public void start() {
+    }
+
     public void in() {
         motor.setPower(1);
     }

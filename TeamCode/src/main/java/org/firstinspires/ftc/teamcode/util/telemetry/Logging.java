@@ -37,7 +37,7 @@ import java.util.Map;
  * </ul>
  */
 public class Logging {
-    public final JoinedTelemetry log;
+    public final Telemetry log;
     private FieldRenderer fieldRenderer;
     private final Map<String, Telemetry.Item> itemCache = new HashMap<>();
     private final Map<String, Telemetry.Line> lineCache = new HashMap<>();
@@ -49,7 +49,7 @@ public class Logging {
      */
     public Logging(Telemetry telemetry) {
         // joinedTelemetry automatically bridges DS and Panels
-        this.log = new JoinedTelemetry(PanelsTelemetry.INSTANCE.getFtcTelemetry(), telemetry);
+        this.log = telemetry;
         Drawing.init();
 
         log.setAutoClear(false);
@@ -58,7 +58,6 @@ public class Logging {
         log.setItemSeparator("");
         log.setCaptionValueSeparator("");
         log.clearAll();
-        log.update();
     }
 
     /**

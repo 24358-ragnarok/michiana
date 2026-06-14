@@ -48,9 +48,13 @@ public class Robot {
      */
     public final Intake intake;
     /**
-     * The elapsed time since the last update, in seconds.
+     * The elapsed time since the start of the OpMode, in seconds.
      */
     public volatile double elapsedTime;
+    /**
+     * The time at which the OpMode was started.
+     */
+    private double startTime;
 
     /**
      * Initializes the robot hardware and subsystems.
@@ -64,12 +68,17 @@ public class Robot {
      * @param gamepad2    The second gamepad.
      */
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
-        log = new Logging(telemetry);
-        ctrl = new Controller(gamepad1, gamepad2);
-        dt = new Drivetrain(hardwareMap);
-        launcher = new Turret(hardwareMap);
-        intake = new Intake(hardwareMap);
-        peripherals = new Peripherals(hardwareMap);
+        try {
+            log = new Logging(telemetry);
+            ctrl = new Controller(gamepad1, gamepad2);
+            dt = new Drivetrain(hardwareMap);
+            launcher = new Turret(hardwareMap);
+            intake = new Intake(hardwareMap);
+            peripherals = new Peripherals(hardwareMap, telemetry);
+            log.finishSetup();
+        } catch (Exception e) {
+            throw new RobotInitializationError(e);
+        }
     }
 
     /**
@@ -78,14 +87,11 @@ public class Robot {
      * This method should be called once per loop iteration. It clears the bulk cache,
      * updates the drivetrain, and updates the telemetry logging.
      *
-     * @param time The current time in seconds.
+     * @param time The current time in seconds (relative to init).
      */
     public void update(double time) {
-        elapsedTime = time;
-        // Clear the bulk cache to ensure fresh data for this loop iteration
-        PhotonCore.CONTROL_HUB.clearBulkCache();
-        PhotonCore.EXPANSION_HUB.clearBulkCache();
-
+        elapsedTime = time - startTime;
+        peripherals.update();
         dt.update();
         launcher.update(dt.follower.getPose(), dt.follower.getVelocity());
         log.update(dt.follower.getPose());
@@ -94,8 +100,18 @@ public class Robot {
     /**
      * Start all systems. This begins processes restrained by not being able to move during init.
      */
-    public void start() {
+    public void start(double time) {
+        this.startTime = time;
         dt.start();
+        launcher.start();
+        intake.start();
+    }
+
+    /**
+     * Start all systems.
+     */
+    public void start() {
+        start(0);
     }
 
     /**
@@ -105,4 +121,11 @@ public class Robot {
         dt.stop();
         launcher.stop();
     }
+
+    static class RobotInitializationError extends RuntimeException {
+        public RobotInitializationError(Throwable m) {
+            super(m);
+        }
+    }
 }
+

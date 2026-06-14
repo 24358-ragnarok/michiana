@@ -122,7 +122,6 @@ public class AutonomousSequence {
 
             // Advance to the next action
             currentActionIndex++;
-            sequenceTimer.resetTimer();
             actionTimer.resetTimer();
 
             // Initialize the next action if available

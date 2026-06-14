@@ -44,6 +44,10 @@ public class TextFormat {
         return bold(color(text, "#00ff88")); // Bright Green
     }
 
+    public static String newline() {
+        return "<br>";
+    }
+
     public static String error(String text) {
         return bold(color(text, "#ef5350")); // Alert Red
     }

@@ -38,20 +38,18 @@ public class LoopAction implements AutonomousAction {
 
     @Override
     public boolean execute(Robot bot) {
-        double timeLeft = Settings.Autonomous.DURATION - bot.elapsedTime;
-
-        // Check if we have enough time to start another loop
-        if (timeLeft <= secondsToLeave) {
-            return true; // Stop looping
-        }
-
         // Update the sub-sequence
         loopSequence.update(bot);
 
-        // If the sub-sequence finished, restart it and increment the counter
+        // If the sub-sequence finished, check if we should restart it
         if (loopSequence.isComplete()) {
-            loopCount++;
-            loopSequence.start(bot);
+            double timeLeft = Settings.Autonomous.DURATION - bot.elapsedTime;
+            if (timeLeft > secondsToLeave) {
+                loopCount++;
+                loopSequence.start(bot);
+            } else {
+                return true; // Stop looping
+            }
         }
 
         return false; // Continue executing

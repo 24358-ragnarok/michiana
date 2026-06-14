@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.photon.PhotonCore;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.config.Settings;
 
 import java.io.File;
@@ -20,13 +21,14 @@ public class Peripherals {
     private final LynxModule ctrl;
     private final LynxModule exp;
     private final HardwareMap hardwareMap;
+    private final Telemetry telemetry;
 
 
-    public Peripherals(HardwareMap hardwareMap) {
+    public Peripherals(HardwareMap hardwareMap, Telemetry telemetry) {
         this.ctrl = PhotonCore.CONTROL_HUB;
         this.exp = PhotonCore.EXPANSION_HUB;
         this.hardwareMap = hardwareMap;
-
+        this.telemetry = telemetry;
         setupHubs();
     }
 
@@ -38,9 +40,20 @@ public class Peripherals {
         setHubColors(PresetColor.RAINBOW);
     }
 
+    public void update() {
+        PhotonCore.CONTROL_HUB.clearBulkCache();
+        PhotonCore.EXPANSION_HUB.clearBulkCache();
+    }
+
     public void playSound(File f) {
         if (Settings.Flags.SFX && Settings.Flags.DEBUG) {
             sfx.play(hardwareMap.appContext, f, 1.0f, 0, 1.0f);
+        }
+    }
+
+    public void speak(String sentence) {
+        if (Settings.Flags.SFX) {
+            telemetry.speak(sentence);
         }
     }
 
@@ -103,8 +116,14 @@ public class Peripherals {
                         p.add(new Blinker.Step(red, dur, TimeUnit.MILLISECONDS));
                         p.add(new Blinker.Step(Color.BLACK, gap, TimeUnit.MILLISECONDS));
                     }
-                    // replace last gap with longer letter gap
-                    p.set(p.size() - 1, new Blinker.Step(Color.BLACK, letterGap, TimeUnit.MILLISECONDS));
+                    if (!p.isEmpty()) {
+                        // replace last gap with longer letter gap
+                        p.set(p.size() - 1, new Blinker.Step(Color.BLACK, letterGap, TimeUnit.MILLISECONDS));
+                    }
+                }
+
+                if (p.size() > maxPatternLength && maxPatternLength > 0) {
+                    p = new ArrayList<>(p.subList(0, maxPatternLength));
                 }
                 ctrl.setPattern(p);
                 exp.setPattern(p);

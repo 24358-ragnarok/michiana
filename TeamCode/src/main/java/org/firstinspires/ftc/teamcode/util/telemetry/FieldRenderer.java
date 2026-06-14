@@ -9,7 +9,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  * displayed in the text-based telemetry log.
  */
 public class FieldRenderer {
-    private final Telemetry.Item fieldItem;
+    private Telemetry.Item fieldItem;
+    private final Telemetry telemetry;
     private final int width = 73;
     private final int height = 74;
     private final boolean[][] pixels = new boolean[height][width];
@@ -27,7 +28,9 @@ public class FieldRenderer {
      * @param telemetry The telemetry instance to render to.
      */
     public FieldRenderer(Telemetry telemetry) {
-        this.fieldItem = telemetry.addData("", "");
+        this.telemetry = telemetry;
+        this.fieldItem = telemetry.addData("Field", "");
+        fieldItem.setRetained(true);
         drawStaticField();
         snapshot();
     }
@@ -43,6 +46,13 @@ public class FieldRenderer {
     public void render(double x, double y, double heading, String color) {
         restore();
         drawRobot(x, y, heading, color);
+
+        if (fieldItem == null) {
+            fieldItem = telemetry.addData("Field", "");
+            fieldItem.setRetained(true);
+        }
+
+
         fieldItem.setValue("<br/><small><pre style='line-height:1; letter-spacing:0;'>" + buildHtml() + "</pre></small>");
     }
 
