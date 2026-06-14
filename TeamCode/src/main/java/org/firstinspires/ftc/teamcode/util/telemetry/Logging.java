@@ -7,8 +7,6 @@ import static org.firstinspires.ftc.teamcode.config.Settings.Logging.robotLook;
 import com.bylazar.field.FieldManager;
 import com.bylazar.field.PanelsField;
 import com.bylazar.field.Style;
-import com.bylazar.telemetry.JoinedTelemetry;
-import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
@@ -58,6 +56,7 @@ public class Logging {
         log.setItemSeparator("");
         log.setCaptionValueSeparator("");
         log.clearAll();
+        log.update();
     }
 
     /**

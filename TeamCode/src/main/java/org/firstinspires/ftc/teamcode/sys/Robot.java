@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.sys;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.seattlesolvers.solverslib.photon.PhotonCore;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.config.MatchState;
@@ -13,6 +12,8 @@ import org.firstinspires.ftc.teamcode.sys.hardware.Turret;
 import org.firstinspires.ftc.teamcode.sys.software.Peripherals;
 import org.firstinspires.ftc.teamcode.util.Controller;
 import org.firstinspires.ftc.teamcode.util.telemetry.Logging;
+
+import java.util.Locale;
 
 /**
  * The central hardware abstraction class for the robot.
@@ -101,6 +102,13 @@ public class Robot {
         dt.update();
         launcher.update(dt.follower.getPose(), dt.follower.getVelocity());
         log.update(dt.follower.getPose());
+
+        log.setItem("<b>Status</b>", launcher.isReady() ? "<font color='#00FF00'>READY TO FIRE</font>" : "<font color='#FF0000'>PREPARING</font>");
+        log.setItem("Intake", botVelocityToColorString(dt.follower.getVelocity())); // Just an example
+    }
+
+    private String botVelocityToColorString(Vector velocity) {
+        return String.format(Locale.getDefault(), "%.1f, %.1f", velocity.getXComponent(), velocity.getYComponent());
     }
 
     /**
