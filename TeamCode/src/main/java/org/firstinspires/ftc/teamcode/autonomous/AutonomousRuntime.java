@@ -1,15 +1,20 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import org.firstinspires.ftc.teamcode.util.telemetry.Wizard;
+import com.pedropathing.geometry.Pose;
+import org.firstinspires.ftc.teamcode.config.Settings;
 
 /**
  * Enumeration of available autonomous strategies.
  * <p>
- * Each enum constant represents a distinct autonomous routine (e.g., "Safe", "Aggressive").
- * It defines how to build the sequence for both "Far" and "Close" starting positions.
+ * Each enum constant represents a distinct autonomous routine (e.g., "Safe",
+ * "Aggressive").
+ * It defines how to build the sequence for both "Far" and "Close" starting
+ * positions.
  * <p>
  * This allows the {@link Wizard} to cycle through
- * available strategies and select the appropriate one based on the robot's starting position.
+ * available strategies and select the appropriate one based on the robot's
+ * starting position.
  */
 public enum AutonomousRuntime {
     DEFAULT("I have yet to make an autonomous mode.") {
@@ -22,6 +27,60 @@ public enum AutonomousRuntime {
         @Override
         public AutonomousSequence buildCloseSequence() {
             return new SequenceBuilder()
+                    .build();
+        }
+    },
+    CLASSIC_12_BALL("Classic 12 Ball") {
+        @Override
+        public AutonomousSequence buildFarSequence() {
+            return new SequenceBuilder()
+                    // Preload
+                    .moveTo(Settings.Positions.TeleOp.FAR_SHOOT_AUTO, "Launch Preload")
+                    .launch()
+                    // Set 1
+                    .moveSplineTo(Settings.Positions.Samples.Preset1.END, "Grab Set 1",
+                            Settings.Positions.ControlPoints.PRESET_1_APPROACH_FAR)
+                    .withIntake()
+                    .moveCurveToVia(Settings.Positions.TeleOp.FAR_SHOOT_AUTO,
+                            Settings.Positions.ControlPoints.PRESET_1_END_TO_FAR_SHOOT, "Return Set 1")
+                    .launch()
+                    // Set 2
+                    .moveSplineTo(Settings.Positions.Samples.Preset2.END, "Grab Set 2",
+                            Settings.Positions.ControlPoints.PRESET_2_APPROACH_FAR)
+                    .withIntake()
+                    .moveTo(Settings.Positions.TeleOp.FAR_SHOOT_AUTO, "Return Set 2")
+                    .launch()
+                    // Park
+                    .moveTo(Settings.Positions.Park.FAR, "Park")
+                    .endAt(Settings.Positions.Park.FAR)
+                    .build();
+        }
+
+        @Override
+        public AutonomousSequence buildCloseSequence() {
+            return new SequenceBuilder()
+                    // Preload
+                    .moveTo(Settings.Positions.TeleOp.CLOSE_SHOOT_AUTO, "Launch Preload")
+                    .launch()
+                    // Preset 2
+                    .moveCurveToVia(Settings.Positions.Samples.Preset2.END_AND_EMPTY_GATE,
+                            Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET2_END, "Grab Preset 2")
+                    .withIntake()
+                    .moveCurveToVia(Settings.Positions.TeleOp.CLOSE_SHOOT_AUTO,
+                            Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET2_END, "Return Preset 2")
+                    .launch()
+                    // Loop the "Eat" logic until 6 seconds remain
+                    .loopUntilSecondsLeft(6, loop -> loop
+                            .moveCurveToVia(Settings.Positions.Samples.GateAndEating.EMPTY_GATE,
+                                    Settings.Positions.ControlPoints.EMPTY_GATE_APPROACH, "Collect")
+                            .withIntake()
+                            .wait(0.5)
+                            .moveCurveToVia(Settings.Positions.TeleOp.CLOSE_SHOOT_AUTO,
+                                    Settings.Positions.ControlPoints.EMPTY_GATE_APPROACH, "Return")
+                            .launch())
+                    // Park
+                    .moveTo(Settings.Positions.Park.CLOSE, "Park")
+                    .endAt(Settings.Positions.Park.CLOSE)
                     .build();
         }
     },

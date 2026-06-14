@@ -101,7 +101,8 @@ public class Turret {
         }
 
         public void setAngleRadians(double angleRad) {
-            this.currentAngleRad = Range.clip(angleRad, Settings.Turret.HOOD_MIN_ANGLE_RAD, Settings.Turret.HOOD_MAX_ANGLE_RAD);
+            this.currentAngleRad = Range.clip(angleRad, Settings.Turret.HOOD_MIN_ANGLE_RAD,
+                    Settings.Turret.HOOD_MAX_ANGLE_RAD);
             double normalized = (currentAngleRad - Settings.Turret.HOOD_MIN_ANGLE_RAD)
                     / (Settings.Turret.HOOD_MAX_ANGLE_RAD - Settings.Turret.HOOD_MIN_ANGLE_RAD);
             double position = Settings.Turret.HOOD_MIN_SERVO_POSITION
@@ -119,7 +120,6 @@ public class Turret {
 
         public Yaw(HardwareMap hardwareMap) {
             this.motor = hardwareMap.get(DcMotorEx.class, Settings.Hardware.YAW);
-            this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             this.motor.setTargetPosition(0);
             this.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             this.motor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, Settings.Turret.YAW_PIDF);
@@ -137,10 +137,12 @@ public class Turret {
             double robotRelativeYaw = normalizeRadians(fieldYaw - botPose.getHeading());
 
             double targetTicks = angleToTicks(Math.toDegrees(robotRelativeYaw));
-            motor.setTargetPosition((int) Range.clip(targetTicks, Settings.Turret.YAW_MIN_TICKS, Settings.Turret.YAW_MAX_TICKS));
+            motor.setTargetPosition(
+                    (int) Range.clip(targetTicks, Settings.Turret.YAW_MIN_TICKS, Settings.Turret.YAW_MAX_TICKS));
         }
 
-        private double applyMotionCompensation(double dx, double dy, double hoodAngle, double flywheelRPM, Vector botVelocity, Pose botPose) {
+        private double applyMotionCompensation(double dx, double dy, double hoodAngle, double flywheelRPM,
+                Vector botVelocity, Pose botPose) {
             if (!Settings.Turret.USE_MOTION_COMPENSATION || botVelocity == null) {
                 return Math.atan2(dy, dx);
             }
@@ -151,11 +153,13 @@ public class Turret {
                 return Math.atan2(dy, dx);
             }
 
-            double heading = botPose.getHeading();
-            double robotVx = (botVelocity.getXComponent() * Math.cos(heading)) - (botVelocity.getYComponent() * Math.sin(heading));
-            double robotVy = (botVelocity.getXComponent() * Math.sin(heading)) + (botVelocity.getYComponent() * Math.cos(heading));
+            double robotVx = botVelocity.getXComponent();
+            double robotVy = botVelocity.getYComponent();
 
             double magnitude = Math.hypot(dx, dy);
+            if (magnitude <= EPSILON) {
+                return Math.atan2(dy, dx);
+            }
             double dirX = dx / magnitude;
             double dirY = dy / magnitude;
 
@@ -168,12 +172,15 @@ public class Turret {
         private double angleToTicks(double angleDeg) {
             double normalized = (angleDeg - Settings.Turret.YAW_MIN_ANGLE_DEG)
                     / (Settings.Turret.YAW_MAX_ANGLE_DEG - Settings.Turret.YAW_MIN_ANGLE_DEG);
-            return Settings.Turret.YAW_MIN_TICKS + normalized * (Settings.Turret.YAW_MAX_TICKS - Settings.Turret.YAW_MIN_TICKS);
+            return Settings.Turret.YAW_MIN_TICKS
+                    + normalized * (Settings.Turret.YAW_MAX_TICKS - Settings.Turret.YAW_MIN_TICKS);
         }
 
         private double normalizeRadians(double angle) {
-            while (angle > Math.PI) angle -= 2 * Math.PI;
-            while (angle < -Math.PI) angle += 2 * Math.PI;
+            while (angle > Math.PI)
+                angle -= 2 * Math.PI;
+            while (angle < -Math.PI)
+                angle += 2 * Math.PI;
             return angle;
         }
 
@@ -202,15 +209,20 @@ public class Turret {
         }
 
         public void update(double distance) {
-            if (!active) {return;}
+            if (!active) {
+                return;
+            }
             Settings.Turret.RPMSolution solution = Settings.Turret.RPM_SOLUTION_MODEL.solve(distance);
             setTargetRPM(solution.flywheelRpm);
         }
 
         public void setTargetRPM(double rpm) {
             this.targetRPM = rpm;
-            double motorVelocity = (rpm * Settings.Turret.GEAR_RATIO_MOTOR_TO_FLYWHEEL * Settings.Turret.FLYWHEEL_TICKS_PER_REV) / 60.0;
-            if (!active) {return;}
+            double motorVelocity = (rpm * Settings.Turret.GEAR_RATIO_MOTOR_TO_FLYWHEEL
+                    * Settings.Turret.FLYWHEEL_TICKS_PER_REV) / 60.0;
+            if (!active) {
+                return;
+            }
             rightMotor.setVelocity(motorVelocity);
             leftMotor.setVelocity(motorVelocity);
         }

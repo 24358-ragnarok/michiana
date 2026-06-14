@@ -133,8 +133,8 @@ public class Settings {
         public static double LAUNCHER_HEIGHT_INCHES = 9.0;
         public static double GOAL_HEIGHT_INCHES = 36.0;
         public static double HOOD_ANGLE_OFFSET_RAD = 0.0;
-        public static double YAW_MIN_TICKS = -2000;
-        public static double YAW_MAX_TICKS = 2000;
+        public static double YAW_MIN_TICKS = -2048;
+        public static double YAW_MAX_TICKS = 2048;
         public static double YAW_MIN_ANGLE_DEG = -90.0;
         public static double YAW_MAX_ANGLE_DEG = 90.0;
 
@@ -151,7 +151,6 @@ public class Settings {
         public static double YAW_ZERO_TICKS = 0.0;
         public static double YAW_TICKS_PER_REV = REV_THROUGH_BORE_V2_COUNTS_PER_REV;
         public static double YAW_TICK_DIRECTION = 1.0;
-        public static boolean RESET_YAW_ENCODER_ON_INIT = true;
         public static com.qualcomm.robotcore.hardware.PIDFCoefficients PIDF_R = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
                 35, 0.02, 0, 0);
         public static com.qualcomm.robotcore.hardware.PIDFCoefficients PIDF_L = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
@@ -163,15 +162,18 @@ public class Settings {
         public static double FLYWHEEL_RPM_TO_EXIT_SPEED = 0.05;
 
         /**
-         * Polynomial degree used by {@link org.firstinspires.ftc.teamcode.opmodes.SolutionTuner}
+         * Polynomial degree used by
+         * {@link org.firstinspires.ftc.teamcode.opmodes.SolutionTuner}
          * and the default coefficient arrays below.
          * <p>
-         * Model form: c0 + c1*d + c2*d^2 + ... where d is horizontal distance in inches.
+         * Model form: c0 + c1*d + c2*d^2 + ... where d is horizontal distance in
+         * inches.
          */
         public static int SOLUTION_POLYNOMIAL_DEGREE = 2;
 
         /**
-         * Hood angle model coefficients (radians). Paste updated values from SolutionTuner.
+         * Hood angle model coefficients (radians). Paste updated values from
+         * SolutionTuner.
          */
         public static double[] ANGLE_COEFFICIENTS = PolynomialShooterModels.defaultAngleCoefficients();
 
@@ -180,11 +182,11 @@ public class Settings {
          */
         public static double[] RPM_COEFFICIENTS = PolynomialShooterModels.defaultRpmCoefficients();
 
-        public static AngleSolutionModel ANGLE_SOLUTION_MODEL =
-                PolynomialShooterModels.angleFromCoefficients(ANGLE_COEFFICIENTS);
+        public static AngleSolutionModel ANGLE_SOLUTION_MODEL = PolynomialShooterModels
+                .angleFromCoefficients(ANGLE_COEFFICIENTS);
 
-        public static RPMSolutionModel RPM_SOLUTION_MODEL =
-                PolynomialShooterModels.rpmFromCoefficients(RPM_COEFFICIENTS);
+        public static RPMSolutionModel RPM_SOLUTION_MODEL = PolynomialShooterModels
+                .rpmFromCoefficients(RPM_COEFFICIENTS);
 
         public interface AngleSolutionModel {
             AngleSolution solve(double distanceInches);
@@ -244,17 +246,89 @@ public class Settings {
     }
 
     public static class Positions {
-        public static class BotPoses {
-            public static Pose START_FAR = new Pose();
-            public static Pose START_CLOSE = new Pose();
+        public static class Towers {
+            public static final Pose RED_GOAL = new Pose(130.0, 130.0, Math.toRadians(225));
+            public static final Pose BLUE_GOAL = new Pose(14.0, 130.0, Math.toRadians(315));
+            public static final Pose OBELISK = new Pose(72.0, 150.0, Math.toRadians(0));
+            public static final Pose CLASSIFIER_EXIT = new Pose(9.4, 50, Math.toRadians(97));
+            public static final Pose CLOSE_SCAN = new Pose(60, 100.0, Math.toRadians(80));
+            public static final Pose FAR_SCAN = new Pose(60, 12, Math.toRadians(80));
         }
 
-        public static class TeleopPresets {
+        public static class TeleOp {
             public static final Pose CLOSE_SHOOT = new Pose(54.92, 86.55, Math.toRadians(130.6));
+            public static final Pose CLOSE_SHOOT_AUTO = new Pose(58, 81, Math.toRadians(130.0));
             public static final Pose FAR_SHOOT = new Pose(60, 18, Math.toRadians(112.75));
+            public static final Pose FAR_SHOOT_AUTO = new Pose(55, 18, Math.toRadians(111));
             public static final Pose HUMAN_PLAYER = new Pose(30, 30, Math.toRadians(225));
             public static final Pose GATE = new Pose(12.44, 62, Math.toRadians(150));
             public static final Pose PARK = new Pose(106, 32, Math.toRadians(180));
+        }
+
+        public static class BotPoses {
+            public static final Pose START_FAR = new Pose(56.26, 9.0, Math.toRadians(90));
+            public static final Pose START_CLOSE = new Pose(21.89, 123.24, Math.toRadians(55));
+        }
+
+        public static class Samples {
+            public static class GateAndEating {
+                public static final Pose EAT_FROM_EMPTY_DIRECTLY = new Pose(32, 16);
+                public static final Pose EMPTY_GATE = new Pose(12, 60.6, Math.toRadians(147));
+                public static final Pose EMPTY_GATE_MOVE_BACK = new Pose(12, 55.6, Math.toRadians(147));
+            }
+
+            public static class Preset1 {
+                public static final Pose PREP = new Pose(44, 35.67, Math.toRadians(180));
+                public static final Pose GRAB_1 = new Pose(36.0, 35.67, Math.toRadians(180));
+                public static final Pose END = new Pose(20, 35.67, Math.toRadians(180));
+            }
+
+            public static class Preset2 {
+                public static final Pose PREP = new Pose(44, 59.5, Math.toRadians(180));
+                public static final Pose END = new Pose(25, 58, Math.toRadians(180));
+                public static final Pose END_AND_EMPTY_GATE = new Pose(20, 63, Math.toRadians(180));
+            }
+
+            public static class Preset3 {
+                public static final Pose PREP = new Pose(44, 84.6, Math.toRadians(180));
+                public static final Pose END = new Pose(20, 84.6, Math.toRadians(180));
+            }
+
+            public static class HumanPlayerPreset {
+                public static final Pose END = new Pose(7.0, 21, Math.toRadians(180));
+                public static final Pose HUMAN_PLAYER_GRAB_1 = new Pose(5, 8.5, Math.toRadians(180));
+                public static final Pose END_First_Secure_preload = new Pose(18, 10, Math.toRadians(180));
+                public static final Pose END_First_Secure_preload1 = new Pose(10, 10, Math.toRadians(180));
+            }
+        }
+
+        public static class ControlPoints {
+            public static final Pose TURN_BOT = new Pose(53.4, 16.9, Math.toRadians(180));
+            public static final Pose FROM_FAR_SHOOT_TO_HP = new Pose(70.4, 8);
+            public static final Pose PRESET_1_APPROACH_FAR = new Pose(75, 38);
+            public static final Pose PRESET_1_APPROACH_CLOSE = new Pose(67, 23);
+            public static final Pose PRESET_1_END_TO_FAR_SHOOT = new Pose(50, 30);
+            public static final Pose FROM_PRESET2_TO_CLOSE = new Pose(64, 56);
+            public static final Pose PRESET_2_APPROACH_FAR = new Pose(65, 59);
+            public static final Pose FROM_PRESET3_TO_CLOSE = new Pose(41, 81);
+            public static final Pose FROM_PRESET3_TO_FAR = new Pose(52, 37);
+            public static final Pose FROM_CLOSE_SHOOT_TO_PRESET2_END = new Pose(65.4, 58);
+            public static final Pose FROM_CLOSE_SHOOT_TO_PRESET3_END = new Pose(81, 81);
+            public static final Pose EMPTY_GATE_APPROACH = new Pose(42.5, 64.3);
+        }
+
+        public static class Park {
+            public static final Pose FAR = new Pose(53, 21.5, Math.toRadians(135));
+            public static final Pose CLOSE = new Pose(58.1, 101.7, Math.toRadians(145));
+            public static final Pose CLOSE_SAFE_PARK_POSE = new Pose(48, 130, Math.toRadians(90));
+        }
+
+        public static class TeleopPresets {
+            public static final Pose CLOSE_SHOOT = TeleOp.CLOSE_SHOOT;
+            public static final Pose FAR_SHOOT = TeleOp.FAR_SHOOT;
+            public static final Pose HUMAN_PLAYER = TeleOp.HUMAN_PLAYER;
+            public static final Pose GATE = TeleOp.GATE;
+            public static final Pose PARK = TeleOp.PARK;
         }
     }
 

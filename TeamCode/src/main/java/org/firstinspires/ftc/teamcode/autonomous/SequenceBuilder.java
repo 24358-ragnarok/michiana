@@ -4,11 +4,15 @@ import com.pedropathing.geometry.Pose;
 
 import org.firstinspires.ftc.teamcode.autonomous.actions.CurvePathAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.EndAtAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.LaunchAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.LinearPathAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.LoopAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ParallelAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.SplinedPathAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.StartIntakeAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.StopIntakeAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.WaitAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.WithIntakeAction;
 import org.firstinspires.ftc.teamcode.config.MatchState;
 
 import java.util.function.Consumer;
@@ -17,14 +21,16 @@ import java.util.function.Consumer;
  * A fluent builder API for creating {@link AutonomousSequence}s.
  * <p>
  * This class provides a readable, chainable way to define autonomous routines.
- * It abstracts away the creation of specific {@link AutonomousAction} instances.
+ * It abstracts away the creation of specific {@link AutonomousAction}
+ * instances.
  * <p>
  * Example:
+ * 
  * <pre>
  * new SequenceBuilder()
- *     .moveTo(targetPose)
- *     .wait(1.0)
- *     .build();
+ *         .moveTo(targetPose)
+ *         .wait(1.0)
+ *         .build();
  * </pre>
  */
 public class SequenceBuilder {
@@ -100,7 +106,8 @@ public class SequenceBuilder {
     }
 
     /**
-     * Adds a curved path action with explicit control points and an auto-generated name.
+     * Adds a curved path action with explicit control points and an auto-generated
+     * name.
      *
      * @param targetPose    The target pose (in BLUE alliance coordinates).
      * @param controlPoints The control points defining the curve.
@@ -125,7 +132,8 @@ public class SequenceBuilder {
     }
 
     /**
-     * Adds an action to hold the robot's position at the specified pose indefinitely.
+     * Adds an action to hold the robot's position at the specified pose
+     * indefinitely.
      * <p>
      * This is typically used as the final action in a sequence.
      *
@@ -148,6 +156,50 @@ public class SequenceBuilder {
      */
     public SequenceBuilder wait(double seconds) {
         sequence.addAction(new WaitAction(seconds));
+        return this;
+    }
+
+    /**
+     * Starts the intake mechanism.
+     *
+     * @return This builder instance.
+     */
+    public SequenceBuilder startIntake() {
+        sequence.addAction(new StartIntakeAction());
+        return this;
+    }
+
+    /**
+     * Stops the intake mechanism.
+     *
+     * @return This builder instance.
+     */
+    public SequenceBuilder stopIntake() {
+        sequence.addAction(new StopIntakeAction());
+        return this;
+    }
+
+    /**
+     * Launches a projectile from the turret.
+     *
+     * @return This builder instance.
+     */
+    public SequenceBuilder launch() {
+        sequence.addAction(new LaunchAction());
+        return this;
+    }
+
+    /**
+     * Wraps the last added action with an intake start/stop.
+     * Note: This adds a new WithIntakeAction wrapping the last added action.
+     *
+     * @return This builder instance.
+     */
+    public SequenceBuilder withIntake() {
+        if (!sequence.getActions().isEmpty()) {
+            AutonomousAction lastAction = sequence.getActions().remove(sequence.getActions().size() - 1);
+            sequence.addAction(new WithIntakeAction(lastAction));
+        }
         return this;
     }
 
@@ -176,11 +228,13 @@ public class SequenceBuilder {
     }
 
     /**
-     * Creates a loop that repeats a sub-sequence of actions until a certain time remains.
+     * Creates a loop that repeats a sub-sequence of actions until a certain time
+     * remains.
      * <p>
      * Useful for maximizing cycles in the remaining autonomous period.
      *
-     * @param secondsToLeave The minimum time (in seconds) that must remain to start another iteration.
+     * @param secondsToLeave The minimum time (in seconds) that must remain to start
+     *                       another iteration.
      * @param loopBuilder    A consumer that defines the sequence to be looped.
      * @return This builder instance.
      */

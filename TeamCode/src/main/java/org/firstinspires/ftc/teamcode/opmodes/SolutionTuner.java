@@ -4,6 +4,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.config.MatchState;
 import org.firstinspires.ftc.teamcode.config.Settings;
 import org.firstinspires.ftc.teamcode.sys.Robot;
@@ -103,16 +104,16 @@ public class SolutionTuner extends OpMode {
         double hoodStep = bot.ctrl.sub.right_bumper ? HOOD_STEP_RAD * COARSE_MULTIPLIER : HOOD_STEP_RAD;
         double rpmStep = bot.ctrl.sub.right_bumper ? RPM_STEP * COARSE_MULTIPLIER : RPM_STEP;
 
-        if (bot.ctrl.sub.dpad_upWasPressed()) {
+        if (bot.ctrl.sub.dpadUpWasPressed()) {
             manualHoodAngleRad = PolynomialShooterModels.clipAngleRadians(manualHoodAngleRad + hoodStep);
         }
-        if (bot.ctrl.sub.dpad_downWasPressed()) {
+        if (bot.ctrl.sub.dpadDownWasPressed()) {
             manualHoodAngleRad = PolynomialShooterModels.clipAngleRadians(manualHoodAngleRad - hoodStep);
         }
-        if (bot.ctrl.sub.dpad_rightWasPressed()) {
+        if (bot.ctrl.sub.dpadRightWasPressed()) {
             manualFlywheelRpm += rpmStep;
         }
-        if (bot.ctrl.sub.dpad_leftWasPressed()) {
+        if (bot.ctrl.sub.dpadLeftWasPressed()) {
             manualFlywheelRpm = Math.max(0.0, manualFlywheelRpm - rpmStep);
         }
 

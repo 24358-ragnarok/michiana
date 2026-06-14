@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.photon.PhotonCore;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.config.MatchState;
+import org.firstinspires.ftc.teamcode.config.Settings;
 import org.firstinspires.ftc.teamcode.sys.hardware.Drivetrain;
 import org.firstinspires.ftc.teamcode.sys.hardware.Intake;
 import org.firstinspires.ftc.teamcode.sys.hardware.Turret;
@@ -15,8 +17,10 @@ import org.firstinspires.ftc.teamcode.util.telemetry.Logging;
 /**
  * The central hardware abstraction class for the robot.
  * <p>
- * This class initializes and manages all hardware subsystems, including the drivetrain,
- * controllers, and logging. It also handles the bulk caching mode for the Lynx modules
+ * This class initializes and manages all hardware subsystems, including the
+ * drivetrain,
+ * controllers, and logging. It also handles the bulk caching mode for the Lynx
+ * modules
  * to optimize loop times.
  */
 public class Robot {
@@ -59,7 +63,8 @@ public class Robot {
     /**
      * Initializes the robot hardware and subsystems.
      * <p>
-     * Sets up PhotonCore for optimized bulk caching, initializes the logging system,
+     * Sets up PhotonCore for optimized bulk caching, initializes the logging
+     * system,
      * wraps the gamepads in a Controller instance, and initializes the drivetrain.
      *
      * @param hardwareMap The hardware map from the OpMode.
@@ -84,7 +89,8 @@ public class Robot {
     /**
      * Updates the robot's state.
      * <p>
-     * This method should be called once per loop iteration. It clears the bulk cache,
+     * This method should be called once per loop iteration. It clears the bulk
+     * cache,
      * updates the drivetrain, and updates the telemetry logging.
      *
      * @param time The current time in seconds (relative to init).
@@ -98,12 +104,15 @@ public class Robot {
     }
 
     /**
-     * Start all systems. This begins processes restrained by not being able to move during init.
+     * Start all systems. This begins processes restrained by not being able to move
+     * during init.
      */
     public void start(double time) {
         this.startTime = time;
         dt.start();
         launcher.start();
+        Turret.setTargetPose(
+                MatchState.isBlue ? Settings.Positions.Towers.BLUE_GOAL : Settings.Positions.Towers.RED_GOAL);
         intake.start();
     }
 
@@ -128,4 +137,3 @@ public class Robot {
         }
     }
 }
-

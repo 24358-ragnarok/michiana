@@ -13,10 +13,10 @@ import java.util.List;
  * <p>
  * This class handles the execution flow of autonomous routines, including:
  * <ul>
- *   <li>Sequential execution of actions.</li>
- *   <li>Automatic state transitions.</li>
- *   <li>Timeout handling for individual actions.</li>
- *   <li>Progress tracking for telemetry.</li>
+ * <li>Sequential execution of actions.</li>
+ * <li>Automatic state transitions.</li>
+ * <li>Timeout handling for individual actions.</li>
+ * <li>Progress tracking for telemetry.</li>
  * </ul>
  */
 public class AutonomousSequence {
@@ -67,7 +67,8 @@ public class AutonomousSequence {
     /**
      * Starts the sequence from the beginning.
      * <p>
-     * Resets timers and initializes the first action. This must be called before {@link #update(Robot)}.
+     * Resets timers and initializes the first action. This must be called before
+     * {@link #update(Robot)}.
      *
      * @param bot The robot instance.
      */
@@ -88,9 +89,9 @@ public class AutonomousSequence {
      * <p>
      * This method should be called repeatedly in the autonomous loop. It handles:
      * <ul>
-     *   <li>Executing the current action.</li>
-     *   <li>Checking for completion or timeouts.</li>
-     *   <li>Transitioning to the next action.</li>
+     * <li>Executing the current action.</li>
+     * <li>Checking for completion or timeouts.</li>
+     * <li>Transitioning to the next action.</li>
      * </ul>
      *
      * @param bot The robot instance.
@@ -174,7 +175,8 @@ public class AutonomousSequence {
     /**
      * Gets the name of the currently executing action.
      *
-     * @return The name of the current action, or "Complete" if the sequence is finished.
+     * @return The name of the current action, or "Complete" if the sequence is
+     *         finished.
      */
     public String getCurrentActionName() {
         if (isComplete()) {
@@ -193,5 +195,9 @@ public class AutonomousSequence {
             return 100.0;
         }
         return (currentActionIndex * 100.0) / actions.size();
+    }
+
+    public List<AutonomousAction> getActions() {
+        return actions;
     }
 }
