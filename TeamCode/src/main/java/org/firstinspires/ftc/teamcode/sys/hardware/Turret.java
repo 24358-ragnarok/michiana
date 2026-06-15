@@ -127,7 +127,6 @@ public class Turret {
 
         public Yaw(HardwareMap hardwareMap) {
             this.motor = hardwareMap.get(DcMotorEx.class, Settings.Hardware.YAW);
-            this.motor.setTargetPosition(0);
             this.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
@@ -163,7 +162,7 @@ public class Turret {
 
             double minTicks = Math.min(Settings.Turret.YAW_MIN_TICKS, Settings.Turret.YAW_MAX_TICKS);
             double maxTicks = Math.max(Settings.Turret.YAW_MIN_TICKS, Settings.Turret.YAW_MAX_TICKS);
-            motor.setTargetPosition((int) Range.clip(targetTicks, minTicks, maxTicks));
+            motor.setTargetPosition((int) -Range.clip(targetTicks, minTicks, maxTicks));
         }
 
         private double applyMotionCompensation(double dx, double dy, double hoodAngle, double flywheelRPM,
@@ -236,7 +235,7 @@ public class Turret {
 
             rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
             rightMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Settings.Turret.PIDF_R);
             leftMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Settings.Turret.PIDF_L);

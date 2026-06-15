@@ -117,8 +117,8 @@ public class Settings {
         // Hood calibration: map 10-50 degrees into servo range 0.2-0.8.
         public static double HOOD_MIN_ANGLE_RAD = Math.toRadians(10.0);
         public static double HOOD_MAX_ANGLE_RAD = Math.toRadians(50.0);
-        public static double HOOD_MIN_SERVO_POSITION = 0.2;
-        public static double HOOD_MAX_SERVO_POSITION = 0.8;
+        public static double HOOD_MIN_SERVO_POSITION = 0.0;
+        public static double HOOD_MAX_SERVO_POSITION = 1.0;
         // Flywheel target conversion:
         // flywheel velocity * motor-to-flywheel ratio = motor velocity target.
         public static double GEAR_RATIO_MOTOR_TO_FLYWHEEL = 1.0;
@@ -128,10 +128,10 @@ public class Settings {
         public static double LAUNCHER_HEIGHT_INCHES = 9.0;
         public static double GOAL_HEIGHT_INCHES = 36.0;
         public static double HOOD_ANGLE_OFFSET_RAD = 0.0;
-        public static double YAW_MIN_TICKS = 551;
-        public static double YAW_MAX_TICKS = -479;
-        public static double YAW_MIN_ANGLE_DEG = -132;
-        public static double YAW_MAX_ANGLE_DEG = 108;
+        public static double YAW_MIN_TICKS = 537;
+        public static double YAW_MAX_TICKS = -453;
+        public static double YAW_MIN_ANGLE_DEG = -123;
+        public static double YAW_MAX_ANGLE_DEG = 107;
 
         public static double TUNG_OPEN_POSITION = 0.6;
         public static double TUNG_CLOSED_POSITION = 0.67;
