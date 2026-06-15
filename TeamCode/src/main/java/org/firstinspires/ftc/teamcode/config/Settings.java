@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.config;
 
-import android.content.Context;
-
 import com.bylazar.field.Style;
 import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
@@ -10,14 +8,11 @@ import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathConstraints;
-import com.qualcomm.ftccommon.FtcEventLoop;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.ftccommon.external.OnCreateEventLoop;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.shooter.PolynomialShooterModels;
-import org.psilynx.psikit.ftc.autolog.PsiKitAutoLogSettings;
 
 /**
  * Global configuration settings for the robot.
@@ -133,13 +128,13 @@ public class Settings {
         public static double LAUNCHER_HEIGHT_INCHES = 9.0;
         public static double GOAL_HEIGHT_INCHES = 36.0;
         public static double HOOD_ANGLE_OFFSET_RAD = 0.0;
-        public static double YAW_MIN_TICKS = -2048;
-        public static double YAW_MAX_TICKS = 2048;
-        public static double YAW_MIN_ANGLE_DEG = -90.0;
-        public static double YAW_MAX_ANGLE_DEG = 90.0;
+        public static double YAW_MIN_TICKS = 551;
+        public static double YAW_MAX_TICKS = -479;
+        public static double YAW_MIN_ANGLE_DEG = -132;
+        public static double YAW_MAX_ANGLE_DEG = 108;
 
-        public static double TUNG_OPEN_POSITION = 0.0;
-        public static double TUNG_CLOSED_POSITION = 1.0;
+        public static double TUNG_OPEN_POSITION = 0.6;
+        public static double TUNG_CLOSED_POSITION = 0.67;
 
         // Per-servo PIDF used by software loop for the shared yaw axle.
         public static com.qualcomm.robotcore.hardware.PIDFCoefficients YAW_PIDF = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
@@ -148,9 +143,6 @@ public class Settings {
         // Infinite-yaw tick conversion settings.
         // angleRad = ((ticks - YAW_ZERO_TICKS) / YAW_TICKS_PER_REV) * 2pi *
         // YAW_TICK_DIRECTION
-        public static double YAW_ZERO_TICKS = 0.0;
-        public static double YAW_TICKS_PER_REV = REV_THROUGH_BORE_V2_COUNTS_PER_REV;
-        public static double YAW_TICK_DIRECTION = 1.0;
         public static com.qualcomm.robotcore.hardware.PIDFCoefficients PIDF_R = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
                 35, 0.02, 0, 0);
         public static com.qualcomm.robotcore.hardware.PIDFCoefficients PIDF_L = new com.qualcomm.robotcore.hardware.PIDFCoefficients(

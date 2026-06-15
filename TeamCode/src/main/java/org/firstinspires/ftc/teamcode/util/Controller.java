@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import com.bylazar.gamepad.PanelsGamepad;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 
@@ -31,7 +30,7 @@ public class Controller {
      * @param gamepad2 The second gamepad from the OpMode.
      */
     public Controller(Gamepad gamepad1, Gamepad gamepad2) {
-        main = PanelsGamepad.INSTANCE.getFirstManager().asCombinedFTCGamepad(gamepad1);
-        sub = PanelsGamepad.INSTANCE.getSecondManager().asCombinedFTCGamepad(gamepad2);
+        main = gamepad1;
+        sub = gamepad2;
     }
 }

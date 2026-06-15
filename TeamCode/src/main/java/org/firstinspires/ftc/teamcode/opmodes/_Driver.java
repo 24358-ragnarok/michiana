@@ -62,9 +62,9 @@ public class _Driver extends OpMode {
                 -bot.ctrl.main.left_stick_x,
                 -bot.ctrl.main.right_stick_x
         );
-        if (bot.ctrl.sub.right_trigger > 0.01) {
+        if (bot.ctrl.sub.right_trigger > 0.1) {
             bot.intake.in();
-        } else if (bot.ctrl.sub.left_trigger > 0.01) {
+        } else if (bot.ctrl.sub.left_trigger > 0.1) {
             bot.intake.out();
         } else {
             bot.intake.stop();

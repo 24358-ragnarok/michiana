@@ -129,7 +129,6 @@ public class Turret {
             this.motor = hardwareMap.get(DcMotorEx.class, Settings.Hardware.YAW);
             this.motor.setTargetPosition(0);
             this.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            this.motor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, Settings.Turret.YAW_PIDF);
         }
 
         public void start() {
@@ -137,9 +136,12 @@ public class Turret {
         }
 
         public void setTargetAngle(double angleDeg) {
-            double targetTicks = angleToTicks(angleDeg);
-            motor.setTargetPosition(
-                    (int) Range.clip(targetTicks, Settings.Turret.YAW_MIN_TICKS, Settings.Turret.YAW_MAX_TICKS));
+            double centerDeg = (Settings.Turret.YAW_MIN_ANGLE_DEG + Settings.Turret.YAW_MAX_ANGLE_DEG) / 2.0;
+            double normalizedAngle = normalizeDegrees(angleDeg, centerDeg);
+            double targetTicks = angleToTicks(normalizedAngle);
+            double minTicks = Math.min(Settings.Turret.YAW_MIN_TICKS, Settings.Turret.YAW_MAX_TICKS);
+            double maxTicks = Math.max(Settings.Turret.YAW_MIN_TICKS, Settings.Turret.YAW_MAX_TICKS);
+            motor.setTargetPosition((int) Range.clip(targetTicks, minTicks, maxTicks));
         }
 
         public boolean onTarget() {
@@ -147,15 +149,21 @@ public class Turret {
         }
 
         public void update(Pose botPose, Vector botVelocity, Pose targetPose, double hoodAngle, double flywheelRPM) {
+            if (botPose == null || targetPose == null) return;
             double dx = targetPose.getX() - botPose.getX();
             double dy = targetPose.getY() - botPose.getY();
 
             double fieldYaw = applyMotionCompensation(dx, dy, hoodAngle, flywheelRPM, botVelocity, botPose);
-            double robotRelativeYaw = normalizeRadians(fieldYaw - botPose.getHeading());
+
+            // Normalize the angle relative to the center of the turret's range to correctly handle the dead zone.
+            double centerRad = Math.toRadians((Settings.Turret.YAW_MIN_ANGLE_DEG + Settings.Turret.YAW_MAX_ANGLE_DEG) / 2.0);
+            double robotRelativeYaw = normalizeRadians(fieldYaw - botPose.getHeading(), centerRad);
 
             double targetTicks = angleToTicks(Math.toDegrees(robotRelativeYaw));
-            motor.setTargetPosition(
-                    (int) Range.clip(targetTicks, Settings.Turret.YAW_MIN_TICKS, Settings.Turret.YAW_MAX_TICKS));
+
+            double minTicks = Math.min(Settings.Turret.YAW_MIN_TICKS, Settings.Turret.YAW_MAX_TICKS);
+            double maxTicks = Math.max(Settings.Turret.YAW_MIN_TICKS, Settings.Turret.YAW_MAX_TICKS);
+            motor.setTargetPosition((int) Range.clip(targetTicks, minTicks, maxTicks));
         }
 
         private double applyMotionCompensation(double dx, double dy, double hoodAngle, double flywheelRPM,
@@ -194,11 +202,20 @@ public class Turret {
         }
 
         private double normalizeRadians(double angle) {
-            while (angle > Math.PI)
-                angle -= 2 * Math.PI;
-            while (angle < -Math.PI)
-                angle += 2 * Math.PI;
-            return angle;
+            return normalizeRadians(angle, 0);
+        }
+
+        private double normalizeRadians(double angle, double center) {
+            double normalized = angle - center;
+            while (normalized > Math.PI)
+                normalized -= 2 * Math.PI;
+            while (normalized < -Math.PI)
+                normalized += 2 * Math.PI;
+            return normalized + center;
+        }
+
+        private double normalizeDegrees(double angle, double center) {
+            return Math.toDegrees(normalizeRadians(Math.toRadians(angle), Math.toRadians(center)));
         }
 
         public void stop() {

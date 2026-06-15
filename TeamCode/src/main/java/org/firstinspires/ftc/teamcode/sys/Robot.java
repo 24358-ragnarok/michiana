@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.sys;
 
+import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -74,7 +75,6 @@ public class Robot {
      * @param gamepad2    The second gamepad.
      */
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
-        try {
             log = new Logging(telemetry);
             ctrl = new Controller(gamepad1, gamepad2);
             dt = new Drivetrain(hardwareMap);
@@ -82,9 +82,6 @@ public class Robot {
             intake = new Intake(hardwareMap);
             peripherals = new Peripherals(hardwareMap, telemetry);
             log.finishSetup();
-        } catch (Exception e) {
-            throw new RobotInitializationError(e);
-        }
     }
 
     /**
