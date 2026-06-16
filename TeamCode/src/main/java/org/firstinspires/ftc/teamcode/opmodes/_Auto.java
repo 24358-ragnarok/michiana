@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.bylazar.configurables.annotations.IgnoreConfigurable;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -23,6 +26,10 @@ public class _Auto extends OpMode {
      * The robot hardware interface.
      */
     public Robot bot;
+
+    @IgnoreConfigurable
+    static TelemetryManager telemetryM;
+
     public AutonomousSequence auto;
 
     /**
@@ -38,6 +45,8 @@ public class _Auto extends OpMode {
         MatchState.prepForAuto();
         bot = new Robot(hardwareMap, telemetry, gamepad1, gamepad2);
         wizard = new Wizard(bot);
+        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
+
     }
 
     /**

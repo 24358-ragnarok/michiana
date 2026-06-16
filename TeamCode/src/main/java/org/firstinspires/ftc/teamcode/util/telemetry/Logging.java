@@ -4,9 +4,12 @@ import static org.firstinspires.ftc.teamcode.config.Settings.Logging.INTERVAL;
 import static org.firstinspires.ftc.teamcode.config.Settings.Logging.followerLook;
 import static org.firstinspires.ftc.teamcode.config.Settings.Logging.robotLook;
 
+import com.bylazar.configurables.annotations.IgnoreConfigurable;
 import com.bylazar.field.FieldManager;
 import com.bylazar.field.PanelsField;
 import com.bylazar.field.Style;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
@@ -36,6 +39,8 @@ import java.util.Map;
  */
 public class Logging {
     public final Telemetry log;
+    @IgnoreConfigurable
+    static TelemetryManager panels;
     private FieldRenderer fieldRenderer;
     private final Map<String, Telemetry.Item> itemCache = new HashMap<>();
     private final Map<String, Telemetry.Line> lineCache = new HashMap<>();
@@ -48,6 +53,7 @@ public class Logging {
     public Logging(Telemetry telemetry) {
         // joinedTelemetry automatically bridges DS and Panels
         this.log = telemetry;
+        panels = PanelsTelemetry.INSTANCE.getTelemetry();
         Drawing.init();
 
         log.setAutoClear(false);
@@ -203,6 +209,7 @@ public class Logging {
      */
     public void update() {
         Drawing.update();
+        panels.update();
         log.update();
         log.clear();
     }
@@ -211,6 +218,9 @@ public class Logging {
         if (Settings.Logging.DRAW_FIELD && fieldRenderer != null) {
             fieldRenderer.render(robotPose.getX(), robotPose.getY(), robotPose.getHeading(), robotLook.getOutlineFill());
         }
+        panels.debug("x:" + robotPose.getX());
+        panels.debug("y:" + robotPose.getY());
+        panels.debug("heading:" + robotPose.getHeading());
         update();
     }
 }

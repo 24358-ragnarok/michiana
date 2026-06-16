@@ -48,7 +48,7 @@ public class Robot {
     /**
      * To launch the balls...
      */
-    public final Turret launcher;
+    public final Turret turret;
     /**
      * To get the balls
      */
@@ -78,7 +78,7 @@ public class Robot {
             log = new Logging(telemetry);
             ctrl = new Controller(gamepad1, gamepad2);
             dt = new Drivetrain(hardwareMap);
-            launcher = new Turret(hardwareMap);
+        turret = new Turret(hardwareMap);
             intake = new Intake(hardwareMap);
             peripherals = new Peripherals(hardwareMap, telemetry);
             log.finishSetup();
@@ -97,10 +97,10 @@ public class Robot {
         elapsedTime = time - startTime;
         peripherals.update();
         dt.update();
-        launcher.update(dt.follower.getPose(), dt.follower.getVelocity());
+        turret.update(dt.follower.getPose(), dt.follower.getVelocity());
         log.update(dt.follower.getPose());
 
-        log.setItem("<b>Status</b>", launcher.isReady() ? "<font color='#00FF00'>READY TO FIRE</font>" : "<font color='#FF0000'>PREPARING</font>");
+        log.setItem("<b>Status</b>", turret.isReady() ? "<font color='#00FF00'>READY TO FIRE</font>" : "<font color='#FF0000'>PREPARING</font>");
         log.setItem("Intake", botVelocityToColorString(dt.follower.getVelocity())); // Just an example
     }
 
@@ -115,7 +115,7 @@ public class Robot {
     public void start(double time) {
         this.startTime = time;
         dt.start();
-        launcher.start();
+        turret.start();
         Turret.setTargetPose(
                 MatchState.isBlue ? Settings.Positions.Towers.BLUE_GOAL : Settings.Positions.Towers.RED_GOAL);
         intake.start();
@@ -133,7 +133,7 @@ public class Robot {
      */
     public void stop() {
         dt.stop();
-        launcher.stop();
+        turret.stop();
     }
 
     static class RobotInitializationError extends RuntimeException {

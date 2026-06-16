@@ -65,9 +65,7 @@ public class SolutionTuner extends OpMode {
         targetPose = resolveTargetPose();
         Turret.setTargetPose(targetPose);
 
-        bot.dt.follower.setStartingPose(MatchState.getStartsFar()
-                ? Settings.Positions.BotPoses.START_FAR
-                : Settings.Positions.BotPoses.START_CLOSE);
+        bot.dt.follower.setStartingPose(Settings.Positions.BotPoses.START_CLOSE);
         bot.start(time);
 
         Pose startPose = bot.dt.follower.getPose();
@@ -75,6 +73,8 @@ public class SolutionTuner extends OpMode {
         manualHoodAngleRad = PolynomialShooterModels.clipAngleRadians(
                 PolynomialShooterModels.predictAngleRadians(Settings.Turret.ANGLE_COEFFICIENTS, startDistance));
         manualFlywheelRpm = 0;
+        bot.turret.getTung().open();
+        bot.intake.in();
     }
 
     @Override
@@ -82,9 +82,9 @@ public class SolutionTuner extends OpMode {
         bot.dt.update();
         handleControls();
 
-        bot.launcher.getHood().setAngleRadians(manualHoodAngleRad);
-        bot.launcher.getFlywheel().setTargetRPM(manualFlywheelRpm);
-        bot.launcher.updateYaw(bot.dt.follower.getPose(), bot.dt.follower.getVelocity());
+        bot.turret.getHood().setAngleRadians(manualHoodAngleRad);
+        bot.turret.getFlywheel().setTargetRPM(manualFlywheelRpm);
+        bot.turret.updateYaw(bot.dt.follower.getPose(), bot.dt.follower.getVelocity());
 
         renderTelemetry();
         bot.log.update(bot.dt.follower.getPose());
@@ -101,46 +101,46 @@ public class SolutionTuner extends OpMode {
                 -bot.ctrl.main.left_stick_x,
                 -bot.ctrl.main.right_stick_x);
 
-        double hoodStep = bot.ctrl.sub.right_bumper ? HOOD_STEP_RAD * COARSE_MULTIPLIER : HOOD_STEP_RAD;
-        double rpmStep = bot.ctrl.sub.right_bumper ? RPM_STEP * COARSE_MULTIPLIER : RPM_STEP;
+        double hoodStep = bot.ctrl.main.right_bumper ? HOOD_STEP_RAD * COARSE_MULTIPLIER : HOOD_STEP_RAD;
+        double rpmStep = bot.ctrl.main.right_bumper ? RPM_STEP * COARSE_MULTIPLIER : RPM_STEP;
 
-        if (bot.ctrl.sub.dpadUpWasPressed()) {
-            manualHoodAngleRad = PolynomialShooterModels.clipAngleRadians(manualHoodAngleRad + hoodStep);
-        }
-        if (bot.ctrl.sub.dpadDownWasPressed()) {
+        if (bot.ctrl.main.dpadUpWasPressed()) {
             manualHoodAngleRad = PolynomialShooterModels.clipAngleRadians(manualHoodAngleRad - hoodStep);
         }
-        if (bot.ctrl.sub.dpadRightWasPressed()) {
+        if (bot.ctrl.main.dpadDownWasPressed()) {
+            manualHoodAngleRad = PolynomialShooterModels.clipAngleRadians(manualHoodAngleRad + hoodStep);
+        }
+        if (bot.ctrl.main.dpadRightWasPressed()) {
             manualFlywheelRpm += rpmStep;
         }
-        if (bot.ctrl.sub.dpadLeftWasPressed()) {
+        if (bot.ctrl.main.dpadLeftWasPressed()) {
             manualFlywheelRpm = Math.max(0.0, manualFlywheelRpm - rpmStep);
         }
 
-        if (bot.ctrl.sub.aWasPressed()) {
+        if (bot.ctrl.main.aWasPressed()) {
             Pose pose = bot.dt.follower.getPose();
             double distance = horizontalDistance(pose, targetPose);
             session.addSample(distance, manualHoodAngleRad, manualFlywheelRpm);
         }
-        if (bot.ctrl.sub.bWasPressed()) {
+        if (bot.ctrl.main.bWasPressed()) {
             session.removeLastSample();
         }
-        if (bot.ctrl.sub.xWasPressed()) {
+        if (bot.ctrl.main.xWasPressed()) {
             session.clearSamples();
         }
-        if (bot.ctrl.sub.yWasPressed()) {
+        if (bot.ctrl.main.yWasPressed()) {
             session.setPolynomialDegree(session.getPolynomialDegree() % 3 + 1);
         }
 
-        if (bot.ctrl.sub.right_trigger > 0.01) {
-            bot.launcher.getTung().open();
-        } else if (bot.ctrl.sub.left_trigger > 0.01) {
-            bot.launcher.getTung().close();
+        if (bot.ctrl.main.right_trigger > 0.01) {
+            bot.turret.getTung().open();
+        } else if (bot.ctrl.main.left_trigger > 0.01) {
+            bot.turret.getTung().close();
         }
-        if (bot.ctrl.sub.backWasPressed()) {
-            bot.launcher.getFlywheel().toggle();
+        if (bot.ctrl.main.backWasPressed()) {
+            bot.turret.getFlywheel().toggle();
         }
-        if (bot.ctrl.sub.left_bumper && bot.ctrl.sub.right_bumper) {
+        if (bot.ctrl.main.left_bumper && bot.ctrl.sub.right_bumper) {
             loadPredictionAtCurrentDistance();
         }
     }
@@ -171,6 +171,7 @@ public class SolutionTuner extends OpMode {
 
     private void renderTelemetry() {
         Pose pose = bot.dt.follower.getPose();
+        bot.log.drawDebug(bot.dt.follower);
         double distance = horizontalDistance(pose, targetPose);
 
         StringBuilder html = new StringBuilder();
@@ -207,11 +208,11 @@ public class SolutionTuner extends OpMode {
         html.append(" / min ").append(session.getMinimumSampleCount());
         html.append(" (degree ").append(session.getPolynomialDegree()).append(")");
         html.append(TextFormat.newline());
-        html.append(TextFormat.small("GP2 A = success, B = undo, X = clear, Y = cycle degree"));
+        html.append(TextFormat.small("A = success, B = undo, X = clear, Y = cycle degree"));
         html.append(TextFormat.newline());
-        html.append(TextFormat.small("GP2 D-Pad = tune hood/RPM, RB = coarse step"));
+        html.append(TextFormat.small("D-Pad = tune hood/RPM, RB = coarse step"));
         html.append(TextFormat.newline());
-        html.append(TextFormat.small("GP2 LB+RB = load Settings model at current distance"));
+        html.append(TextFormat.small("LB+RB = load Settings model at current distance"));
         html.append(TextFormat.newline()).append(TextFormat.newline());
 
         html.append(TextFormat.subheader("Paste Into Settings.Turret")).append(TextFormat.newline());
@@ -223,6 +224,9 @@ public class SolutionTuner extends OpMode {
         }
 
         dashboardItem.setValue(html.toString());
+        telemetry.addData("x:", pose.getX());
+        telemetry.addData("y:", pose.getY());
+        telemetry.addData("heading:", pose.getHeading());
     }
 
     private static Pose resolveTargetPose() {

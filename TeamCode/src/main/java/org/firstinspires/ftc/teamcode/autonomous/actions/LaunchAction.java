@@ -15,7 +15,7 @@ public class LaunchAction implements AutonomousAction {
     @Override
     public void initialize(Robot bot) {
         timer = new Timer();
-        bot.launcher.getTung().open();
+        bot.turret.getTung().open();
         bot.intake.in();
         timer.resetTimer();
     }
@@ -27,7 +27,7 @@ public class LaunchAction implements AutonomousAction {
 
     @Override
     public void end(Robot bot, boolean interrupted) {
-        bot.launcher.getTung().close();
+        bot.turret.getTung().close();
         bot.intake.stop();
     }
 

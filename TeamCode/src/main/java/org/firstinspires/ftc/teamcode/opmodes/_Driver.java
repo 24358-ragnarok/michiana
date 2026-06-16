@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.bylazar.configurables.annotations.IgnoreConfigurable;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -20,12 +23,17 @@ public class _Driver extends OpMode {
      */
     public Robot bot;
 
+    @IgnoreConfigurable
+    static TelemetryManager telemetryM;
+
     /**
      * Initializes the robot and subsystems.
      */
     @Override
     public void init() {
         bot = new Robot(hardwareMap, telemetry, gamepad1, gamepad2);
+        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
+
     }
 
     /**
@@ -70,13 +78,13 @@ public class _Driver extends OpMode {
             bot.intake.stop();
         }
         if (bot.ctrl.sub.dpadUpWasPressed()) {
-            bot.launcher.getTung().open();
+            bot.turret.getTung().open();
         }
         if (bot.ctrl.sub.dpadDownWasPressed()) {
-            bot.launcher.getTung().close();
+            bot.turret.getTung().close();
         }
         if (bot.ctrl.sub.backWasPressed()) {
-            bot.launcher.getFlywheel().toggle();
+            bot.turret.getFlywheel().toggle();
         }
     }
 

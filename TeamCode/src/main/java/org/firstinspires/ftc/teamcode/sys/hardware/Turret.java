@@ -167,7 +167,7 @@ public class Turret {
         }
 
         private double applyMotionCompensation(double dx, double dy, double hoodAngle, double flywheelRPM,
-                Vector botVelocity, Pose botPose) {
+                                               Vector botVelocity, Pose botPose) {
             if (!Settings.Turret.USE_MOTION_COMPENSATION || botVelocity == null) {
                 return Math.atan2(dy, dx);
             }
