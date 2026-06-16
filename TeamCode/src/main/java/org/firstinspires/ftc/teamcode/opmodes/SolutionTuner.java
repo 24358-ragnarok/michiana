@@ -46,6 +46,7 @@ public class SolutionTuner extends OpMode {
         session = new ShotCalibrationSession();
         session.setPolynomialDegree(Settings.Turret.SOLUTION_POLYNOMIAL_DEGREE);
         dashboardItem = telemetry.addData("Solution Tuner", "");
+        dashboardItem.setRetained(true);
     }
 
     @Override
@@ -73,8 +74,7 @@ public class SolutionTuner extends OpMode {
         double startDistance = horizontalDistance(startPose, targetPose);
         manualHoodAngleRad = PolynomialShooterModels.clipAngleRadians(
                 PolynomialShooterModels.predictAngleRadians(Settings.Turret.ANGLE_COEFFICIENTS, startDistance));
-        manualFlywheelRpm = PolynomialShooterModels.predictFlywheelRpm(
-                Settings.Turret.RPM_COEFFICIENTS, startDistance);
+        manualFlywheelRpm = 0;
     }
 
     @Override

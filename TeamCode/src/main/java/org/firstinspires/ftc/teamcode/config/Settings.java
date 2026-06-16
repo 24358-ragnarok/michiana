@@ -115,13 +115,13 @@ public class Settings {
         public static final double REV_THROUGH_BORE_V2_COUNTS_PER_REV = 8192.0;
 
         // Hood calibration: map 10-50 degrees into servo range 0.2-0.8.
-        public static double HOOD_MIN_ANGLE_RAD = Math.toRadians(10.0);
-        public static double HOOD_MAX_ANGLE_RAD = Math.toRadians(50.0);
+        public static double HOOD_MIN_ANGLE_RAD = Math.toRadians(50.0);
+        public static double HOOD_MAX_ANGLE_RAD = Math.toRadians(70.0);
         public static double HOOD_MIN_SERVO_POSITION = 0.0;
         public static double HOOD_MAX_SERVO_POSITION = 1.0;
         // Flywheel target conversion:
         // flywheel velocity * motor-to-flywheel ratio = motor velocity target.
-        public static double GEAR_RATIO_MOTOR_TO_FLYWHEEL = 1.0;
+        public static double GEAR_RATIO_MOTOR_TO_FLYWHEEL = (double) 2 / 3;
         public static double FLYWHEEL_TICKS_PER_REV = 28.0;
 
         // Geometry for hood "point at goal" behavior.
