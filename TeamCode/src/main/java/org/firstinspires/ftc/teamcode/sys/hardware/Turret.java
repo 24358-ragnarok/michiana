@@ -127,6 +127,7 @@ public class Turret {
 
         public Yaw(HardwareMap hardwareMap) {
             this.motor = hardwareMap.get(DcMotorEx.class, Settings.Hardware.YAW);
+            this.motor.setTargetPosition(0);
             this.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
