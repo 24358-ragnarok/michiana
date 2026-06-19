@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import org.firstinspires.ftc.teamcode.util.telemetry.Wizard;
-import com.pedropathing.geometry.Pose;
 import org.firstinspires.ftc.teamcode.config.Settings;
+import org.firstinspires.ftc.teamcode.util.telemetry.Wizard;
 
 /**
  * Enumeration of available autonomous strategies.

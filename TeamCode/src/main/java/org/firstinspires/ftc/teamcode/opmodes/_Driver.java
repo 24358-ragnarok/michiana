@@ -77,10 +77,10 @@ public class _Driver extends OpMode {
         } else {
             bot.intake.stop();
         }
-        if (bot.ctrl.sub.dpadUpWasPressed()) {
+        if (bot.ctrl.sub.leftBumperWasPressed()) {
             bot.turret.getTung().open();
         }
-        if (bot.ctrl.sub.dpadDownWasPressed()) {
+        if (bot.ctrl.sub.leftBumperWasReleased()) {
             bot.turret.getTung().close();
         }
         if (bot.ctrl.sub.backWasPressed()) {

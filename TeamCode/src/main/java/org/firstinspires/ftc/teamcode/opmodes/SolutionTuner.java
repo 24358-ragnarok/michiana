@@ -28,7 +28,7 @@ import java.util.Locale;
 @TeleOp(name = "Solution Tuner", group = "Tests")
 public class SolutionTuner extends OpMode {
     private static final double HOOD_STEP_RAD = Math.toRadians(0.5);
-    private static final double RPM_STEP = 25.0;
+    private static final double RPM_STEP = 5.0;
     private static final double COARSE_MULTIPLIER = 10.0;
 
     private Robot bot;
@@ -73,8 +73,6 @@ public class SolutionTuner extends OpMode {
         manualHoodAngleRad = PolynomialShooterModels.clipAngleRadians(
                 PolynomialShooterModels.predictAngleRadians(Settings.Turret.ANGLE_COEFFICIENTS, startDistance));
         manualFlywheelRpm = 0;
-        bot.turret.getTung().open();
-        bot.intake.in();
     }
 
     @Override
@@ -139,6 +137,9 @@ public class SolutionTuner extends OpMode {
         }
         if (bot.ctrl.main.backWasPressed()) {
             bot.turret.getFlywheel().toggle();
+        }
+        if (bot.ctrl.main.shareWasPressed()) {
+            bot.intake.toggle();
         }
         if (bot.ctrl.main.left_bumper && bot.ctrl.sub.right_bumper) {
             loadPredictionAtCurrentDistance();

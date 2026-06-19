@@ -43,19 +43,18 @@ public final class PolynomialShooterModels {
     }
 
     public static double[] defaultRpmCoefficients() {
-        return new double[] {3000.0, 0.0, 0.0};
+        return new double[]{100.0, 0.0, 0.0};
     }
 
     public static String formatSettingsSnippet(double[] angleCoefficients, double[] rpmCoefficients) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(PolynomialRegression.formatCoefficients("ANGLE_COEFFICIENTS", angleCoefficients));
-        builder.append("\n");
-        builder.append(PolynomialRegression.formatCoefficients("RPM_COEFFICIENTS", rpmCoefficients));
-        builder.append("\n");
-        builder.append("ANGLE_SOLUTION_MODEL = PolynomialShooterModels.angleFromCoefficients(ANGLE_COEFFICIENTS);");
-        builder.append("\n");
-        builder.append("RPM_SOLUTION_MODEL = PolynomialShooterModels.rpmFromCoefficients(RPM_COEFFICIENTS);");
-        return builder.toString();
+        String builder = PolynomialRegression.formatCoefficients("ANGLE_COEFFICIENTS", angleCoefficients) +
+                "\n" +
+                PolynomialRegression.formatCoefficients("RPM_COEFFICIENTS", rpmCoefficients) +
+                "\n" +
+                "ANGLE_SOLUTION_MODEL = PolynomialShooterModels.angleFromCoefficients(ANGLE_COEFFICIENTS);" +
+                "\n" +
+                "RPM_SOLUTION_MODEL = PolynomialShooterModels.rpmFromCoefficients(RPM_COEFFICIENTS);";
+        return builder;
     }
 
     public static double clipAngleRadians(double angleRadians) {

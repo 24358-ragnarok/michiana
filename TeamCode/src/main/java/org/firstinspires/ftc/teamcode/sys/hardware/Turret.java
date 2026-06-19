@@ -237,9 +237,6 @@ public class Turret {
             rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-            rightMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Settings.Turret.PIDF_R);
-            leftMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Settings.Turret.PIDF_L);
         }
 
         public void update(double distance) {

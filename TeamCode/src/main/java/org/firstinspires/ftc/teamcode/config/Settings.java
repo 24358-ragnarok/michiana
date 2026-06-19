@@ -80,8 +80,8 @@ public class Settings {
             }
 
             public static final MecanumConstants MECANUM = common()
-                    .xVelocity(86)
-                    .yVelocity(60);
+                    .xVelocity(73)
+                    .yVelocity(53);
         }
 
         public static class Localizer {
@@ -143,14 +143,10 @@ public class Settings {
         // Infinite-yaw tick conversion settings.
         // angleRad = ((ticks - YAW_ZERO_TICKS) / YAW_TICKS_PER_REV) * 2pi *
         // YAW_TICK_DIRECTION
-        public static com.qualcomm.robotcore.hardware.PIDFCoefficients PIDF_R = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
-                35, 0.02, 0, 0);
-        public static com.qualcomm.robotcore.hardware.PIDFCoefficients PIDF_L = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
-                35, 0.02, 0, 0);
 
         // Shoot-on-the-move compensation.
         // Converts flywheel RPM from model into projectile linear speed (inches/sec).
-        public static boolean USE_MOTION_COMPENSATION = true;
+        public static boolean USE_MOTION_COMPENSATION = false;
         public static double FLYWHEEL_RPM_TO_EXIT_SPEED = 0.05;
 
         /**

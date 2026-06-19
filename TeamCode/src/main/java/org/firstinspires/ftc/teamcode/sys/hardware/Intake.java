@@ -26,4 +26,12 @@ public class Intake {
     public void stop() {
         motor.setPower(0);
     }
+
+    public void toggle() {
+        if (motor.getPower() > 0) {
+            stop();
+        } else {
+            in();
+        }
+    }
 }
