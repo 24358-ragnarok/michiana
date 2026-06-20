@@ -28,7 +28,7 @@ import java.util.Locale;
 @TeleOp(name = "Solution Tuner", group = "Tests")
 public class SolutionTuner extends OpMode {
     private static final double HOOD_STEP_RAD = Math.toRadians(0.5);
-    private static final double RPM_STEP = 5.0;
+    private static final double RPM_STEP = 50.0;
     private static final double COARSE_MULTIPLIER = 10.0;
 
     private Robot bot;
@@ -75,22 +75,52 @@ public class SolutionTuner extends OpMode {
         manualFlywheelRpm = 0;
     }
 
-    @Override
-    public void loop() {
-        bot.dt.update();
-        handleControls();
-
-        bot.turret.getHood().setAngleRadians(manualHoodAngleRad);
-        bot.turret.getFlywheel().setTargetRPM(manualFlywheelRpm);
-        bot.turret.updateYaw(bot.dt.follower.getPose(), bot.dt.follower.getVelocity());
-
-        renderTelemetry();
-        bot.log.update(bot.dt.follower.getPose());
+    private static Pose resolveTargetPose() {
+        Pose blueTarget = Settings.Positions.TeleOp.FAR_SHOOT;
+        return MatchState.isBlue ? blueTarget : blueTarget.mirror();
     }
 
     @Override
     public void stop() {
         bot.stop();
+    }
+
+    @Override
+    public void loop() {
+        bot.peripherals.update();
+        bot.dt.update();
+        handleControls();
+
+        bot.turret.getHood().setAngleRadians(manualHoodAngleRad);
+        bot.turret.getFlywheel().setWheelTargetRPM(manualFlywheelRpm);
+        bot.turret.updateYaw(bot.dt.follower.getPose(), bot.dt.follower.getVelocity());
+
+        renderTelemetry();
+        bot.log.update(bot.dt.follower);
+    }
+
+    private void loadPredictionAtCurrentDistance() {
+        Pose pose = bot.dt.follower.getPose();
+        double distance = horizontalDistance(pose, targetPose);
+        manualHoodAngleRad = PolynomialShooterModels.clipAngleRadians(
+                PolynomialShooterModels.predictAngleRadians(Settings.Turret.ANGLE_COEFFICIENTS, distance));
+        manualFlywheelRpm = PolynomialShooterModels.predictFlywheelRpm(
+                Settings.Turret.RPM_COEFFICIENTS, distance);
+    }
+
+    private void renderInitTelemetry() {
+        StringBuilder html = new StringBuilder();
+        html.append(TextFormat.header("Solution Tuner")).append(TextFormat.newline());
+        html.append(TextFormat.subheader("Alliance")).append(TextFormat.newline());
+        if (MatchState.isBlue) {
+            html.append(TextFormat.success("BLUE"));
+        } else {
+            html.append(TextFormat.error("RED"));
+        }
+        html.append(TextFormat.newline()).append(TextFormat.newline());
+        html.append("B = Red, X = Blue").append(TextFormat.newline());
+        html.append("Press START when ready.");
+        dashboardItem.setValue(html.toString());
     }
 
     private void handleControls() {
@@ -135,39 +165,15 @@ public class SolutionTuner extends OpMode {
         } else if (bot.ctrl.main.left_trigger > 0.01) {
             bot.turret.getTung().close();
         }
-        if (bot.ctrl.main.backWasPressed()) {
+        if (bot.ctrl.main.optionsWasPressed()) {
             bot.turret.getFlywheel().toggle();
         }
         if (bot.ctrl.main.shareWasPressed()) {
-            bot.intake.toggle();
+            bot.intake.in();
         }
         if (bot.ctrl.main.left_bumper && bot.ctrl.sub.right_bumper) {
             loadPredictionAtCurrentDistance();
         }
-    }
-
-    private void loadPredictionAtCurrentDistance() {
-        Pose pose = bot.dt.follower.getPose();
-        double distance = horizontalDistance(pose, targetPose);
-        manualHoodAngleRad = PolynomialShooterModels.clipAngleRadians(
-                PolynomialShooterModels.predictAngleRadians(Settings.Turret.ANGLE_COEFFICIENTS, distance));
-        manualFlywheelRpm = PolynomialShooterModels.predictFlywheelRpm(
-                Settings.Turret.RPM_COEFFICIENTS, distance);
-    }
-
-    private void renderInitTelemetry() {
-        StringBuilder html = new StringBuilder();
-        html.append(TextFormat.header("Solution Tuner")).append(TextFormat.newline());
-        html.append(TextFormat.subheader("Alliance")).append(TextFormat.newline());
-        if (MatchState.isBlue) {
-            html.append(TextFormat.success("BLUE"));
-        } else {
-            html.append(TextFormat.error("RED"));
-        }
-        html.append(TextFormat.newline()).append(TextFormat.newline());
-        html.append("B = Red, X = Blue").append(TextFormat.newline());
-        html.append("Press START when ready.");
-        dashboardItem.setValue(html.toString());
     }
 
     private void renderTelemetry() {
@@ -200,7 +206,14 @@ public class SolutionTuner extends OpMode {
                         manualHoodAngleRad))
                 .append(TextFormat.newline());
         html.append(TextFormat.bold("Flywheel: "))
-                .append(String.format(Locale.US, "%.0f RPM", manualFlywheelRpm))
+                .append(String.format(Locale.US, "%.0f RPM (Target)", manualFlywheelRpm))
+                .append(TextFormat.newline())
+                .append(TextFormat.bold("Current: "))
+                .append(String.format(Locale.US, "%.1f RPM", bot.turret.getFlywheel().getCurrentRPM()))
+                .append(TextFormat.newline())
+                .append(TextFormat.small(String.format(Locale.US, "R: %.0f TPS, L: %.0f TPS",
+                        bot.turret.getFlywheel().getVelocity(),
+                        bot.turret.getFlywheel().getLeftVelocity())))
                 .append(TextFormat.newline());
         html.append(TextFormat.newline());
 
@@ -228,11 +241,6 @@ public class SolutionTuner extends OpMode {
         telemetry.addData("x:", pose.getX());
         telemetry.addData("y:", pose.getY());
         telemetry.addData("heading:", pose.getHeading());
-    }
-
-    private static Pose resolveTargetPose() {
-        Pose blueTarget = Settings.Positions.TeleopPresets.FAR_SHOOT;
-        return MatchState.isBlue ? blueTarget : blueTarget.mirror();
     }
 
     private static double horizontalDistance(Pose botPose, Pose goalPose) {

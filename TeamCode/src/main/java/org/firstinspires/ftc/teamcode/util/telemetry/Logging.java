@@ -214,13 +214,14 @@ public class Logging {
         log.clear();
     }
 
-    public void update(Pose robotPose) {
+    public void update(Follower follower) {
         if (Settings.Logging.DRAW_FIELD && fieldRenderer != null) {
-            fieldRenderer.render(robotPose.getX(), robotPose.getY(), robotPose.getHeading(), robotLook.getOutlineFill());
+            fieldRenderer.render(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), robotLook.getOutlineFill());
         }
-        panels.debug("x:" + robotPose.getX());
-        panels.debug("y:" + robotPose.getY());
-        panels.debug("heading:" + robotPose.getHeading());
+        panels.debug("x:" + follower.getPose().getX());
+        panels.debug("y:" + follower.getPose().getY());
+        panels.debug("heading:" + follower.getPose().getHeading());
+        drawDebug(follower);
         update();
     }
 }

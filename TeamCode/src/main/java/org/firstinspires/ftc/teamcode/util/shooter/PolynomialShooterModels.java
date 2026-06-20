@@ -19,10 +19,32 @@ public final class PolynomialShooterModels {
         };
     }
 
+    public static Settings.Turret.AngleSolutionModel angleWithFarMax(double[] coefficients) {
+        double[] coeffs = copyCoefficients(coefficients);
+        return distanceInches -> {
+            double angleRadians = PolynomialRegression.evaluate(coeffs, distanceInches);
+            if (distanceInches > 60) {
+                angleRadians = 1.04;
+            }
+            return new Settings.Turret.AngleSolution(angleRadians);
+        };
+    }
+
     public static Settings.Turret.RPMSolutionModel rpmFromCoefficients(double[] coefficients) {
         double[] coeffs = copyCoefficients(coefficients);
         return distanceInches -> {
             double rpm = PolynomialRegression.evaluate(coeffs, distanceInches);
+            return new Settings.Turret.RPMSolution(rpm);
+        };
+    }
+
+    public static Settings.Turret.RPMSolutionModel rpmWithFarMax(double[] coefficients) {
+        double[] coeffs = copyCoefficients(coefficients);
+        return distanceInches -> {
+            double rpm = PolynomialRegression.evaluate(coeffs, distanceInches);
+            if (distanceInches > 60) {
+                rpm = 6000;
+            }
             return new Settings.Turret.RPMSolution(rpm);
         };
     }
@@ -43,7 +65,7 @@ public final class PolynomialShooterModels {
     }
 
     public static double[] defaultRpmCoefficients() {
-        return new double[]{100.0, 0.0, 0.0};
+        return new double[]{1500.0, 0.0, 0.0};
     }
 
     public static String formatSettingsSnippet(double[] angleCoefficients, double[] rpmCoefficients) {

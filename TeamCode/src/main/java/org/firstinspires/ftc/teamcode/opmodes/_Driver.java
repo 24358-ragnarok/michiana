@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.sys.Robot;
  * This OpMode initializes the robot and maps gamepad inputs to robot actions.
  * It handles the driving logic and mechanism controls during the driver-controlled period.
  */
-@TeleOp(name = "Goatpak Strikes Back", group = "0: Competition Modes")
+@TeleOp(name = "dreaming of deepak tn", group = "0: Competition Modes")
 public class _Driver extends OpMode {
     /**
      * The robot hardware interface.
@@ -68,8 +68,32 @@ public class _Driver extends OpMode {
         bot.dt.drive(
                 -bot.ctrl.main.left_stick_y,
                 -bot.ctrl.main.left_stick_x,
-                -bot.ctrl.main.right_stick_x
+                -bot.ctrl.main.right_stick_x + ((bot.ctrl.main.left_trigger - bot.ctrl.main.right_trigger) / 5)
         );
+        if (bot.ctrl.main.psWasPressed()) {
+            bot.dt.follower.setPose(Settings.Positions.TeleOp.RESET);
+        }
+        if (bot.ctrl.main.leftBumperWasPressed()) {
+            bot.turret.getYaw().offset += Math.toRadians(2);
+        }
+        if (bot.ctrl.main.rightBumperWasPressed()) {
+            bot.turret.getYaw().offset -= Math.toRadians(2);
+        }
+        if (bot.ctrl.sub.dpadUpWasReleased()) {
+            bot.turret.getHood().offset += Math.toRadians(2);
+        }
+        if (bot.ctrl.sub.dpadDownWasPressed()) {
+            bot.turret.getHood().offset -= Math.toRadians(2);
+        }
+        if (bot.ctrl.sub.dpadLeftWasPressed()) {
+            bot.turret.getFlywheel().offset += 50;
+        }
+        if (bot.ctrl.sub.dpadRightWasPressed()) {
+            bot.turret.getFlywheel().offset -= 50;
+        }
+        if (bot.ctrl.main.optionsWasPressed()) {
+            bot.turret.getYaw().toggle();
+        }
         if (bot.ctrl.sub.right_trigger > 0.1) {
             bot.intake.in();
         } else if (bot.ctrl.sub.left_trigger > 0.1) {
@@ -84,7 +108,8 @@ public class _Driver extends OpMode {
             bot.turret.getTung().close();
         }
         if (bot.ctrl.sub.backWasPressed()) {
-            bot.turret.getFlywheel().toggle();
+            bot.turret.getFlywheel().offset = 0;
+            bot.turret.getHood().offset = 0;
         }
     }
 

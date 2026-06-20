@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.config.Settings;
 
 public class Turret {
-    private static Pose targetPose = Settings.Positions.TeleopPresets.FAR_SHOOT;
+    private static Pose targetPose = Settings.Positions.Towers.BLUE_GOAL;
     private static final double EPSILON = 1e-6;
 
     private final Hood hood;
@@ -61,7 +61,7 @@ public class Turret {
         if (botPose == null || targetPose == null) {
             return;
         }
-        yaw.update(botPose, botVelocity, targetPose, hood.getAngleRadians(), flywheel.getTargetRPM());
+        yaw.update(botPose, botVelocity, targetPose, hood.getAngleRadians(), flywheel.getWheelTargetRPM());
     }
 
     public double getTargetDistance(Pose botPose) {
@@ -74,7 +74,7 @@ public class Turret {
     }
 
     public void stop() {
-        yaw.stop();
+        yaw.toggle();
         flywheel.stop();
     }
 
@@ -97,6 +97,8 @@ public class Turret {
     public class Hood {
         private final ServoImplEx servo;
         private double currentAngleRad;
+        public double offset = 0;
+
 
         public Hood(HardwareMap hardwareMap) {
             this.servo = hardwareMap.get(ServoImplEx.class, Settings.Hardware.HOOD);
@@ -104,7 +106,7 @@ public class Turret {
 
         public void update(double distance) {
             Settings.Turret.AngleSolution solution = Settings.Turret.ANGLE_SOLUTION_MODEL.solve(distance);
-            setAngleRadians(solution.angleRadians);
+            setAngleRadians(solution.angleRadians + offset);
         }
 
         public void setAngleRadians(double angleRad) {
@@ -124,6 +126,8 @@ public class Turret {
 
     public class Yaw {
         private final DcMotorEx motor;
+        public double offset = 0;
+        private boolean enabled = true;
 
         public Yaw(HardwareMap hardwareMap) {
             this.motor = hardwareMap.get(DcMotorEx.class, Settings.Hardware.YAW);
@@ -135,21 +139,12 @@ public class Turret {
             this.motor.setPower(Settings.Turret.YAW_MAX_POWER);
         }
 
-        public void setTargetAngle(double angleDeg) {
-            double centerDeg = (Settings.Turret.YAW_MIN_ANGLE_DEG + Settings.Turret.YAW_MAX_ANGLE_DEG) / 2.0;
-            double normalizedAngle = normalizeDegrees(angleDeg, centerDeg);
-            double targetTicks = angleToTicks(normalizedAngle);
-            double minTicks = Math.min(Settings.Turret.YAW_MIN_TICKS, Settings.Turret.YAW_MAX_TICKS);
-            double maxTicks = Math.max(Settings.Turret.YAW_MIN_TICKS, Settings.Turret.YAW_MAX_TICKS);
-            motor.setTargetPosition((int) Range.clip(targetTicks, minTicks, maxTicks));
-        }
-
         public boolean onTarget() {
             return Math.abs(motor.getCurrentPosition() - motor.getTargetPosition()) < 15; // ~0.7 degrees tolerance
         }
 
         public void update(Pose botPose, Vector botVelocity, Pose targetPose, double hoodAngle, double flywheelRPM) {
-            if (botPose == null || targetPose == null) return;
+            if (botPose == null || targetPose == null || !enabled) return;
             double dx = targetPose.getX() - botPose.getX();
             double dy = targetPose.getY() - botPose.getY();
 
@@ -157,7 +152,7 @@ public class Turret {
 
             // Normalize the angle relative to the center of the turret's range to correctly handle the dead zone.
             double centerRad = Math.toRadians((Settings.Turret.YAW_MIN_ANGLE_DEG + Settings.Turret.YAW_MAX_ANGLE_DEG) / 2.0);
-            double robotRelativeYaw = normalizeRadians(fieldYaw - botPose.getHeading(), centerRad);
+            double robotRelativeYaw = normalizeRadians(fieldYaw - botPose.getHeading(), centerRad) + offset;
 
             double targetTicks = angleToTicks(Math.toDegrees(robotRelativeYaw));
 
@@ -218,21 +213,24 @@ public class Turret {
             return Math.toDegrees(normalizeRadians(Math.toRadians(angle), Math.toRadians(center)));
         }
 
-        public void stop() {
-            motor.setTargetPosition(0);
-            motor.setPower(Settings.Turret.YAW_MAX_POWER);
+        public void toggle() {
+            enabled = !enabled;
         }
     }
 
     public class Flywheel {
         private final DcMotorEx rightMotor;
         private final DcMotorEx leftMotor;
-        private double targetRPM;
+        public double offset = 0;
+        private double wheelTargetRPM;
         public boolean active = true;
 
         public Flywheel(HardwareMap hardwareMap) {
             this.rightMotor = hardwareMap.get(DcMotorEx.class, Settings.Hardware.FLYWHEEL_R);
             this.leftMotor = hardwareMap.get(DcMotorEx.class, Settings.Hardware.FLYWHEEL_L);
+
+            rightMotor.setVelocityPIDFCoefficients(15, 0, 0, 13);
+            leftMotor.setVelocityPIDFCoefficients(15, 0, 0, 13);
 
             rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -244,30 +242,42 @@ public class Turret {
                 return;
             }
             Settings.Turret.RPMSolution solution = Settings.Turret.RPM_SOLUTION_MODEL.solve(distance);
-            setTargetRPM(solution.flywheelRpm);
+            setWheelTargetRPM(solution.flywheelRpm + offset);
         }
 
-        public void setTargetRPM(double rpm) {
-            this.targetRPM = rpm;
-            double motorVelocity = (rpm * Settings.Turret.GEAR_RATIO_MOTOR_TO_FLYWHEEL
-                    * Settings.Turret.FLYWHEEL_TICKS_PER_REV) / 60.0;
-            if (!active) {
-                return;
-            }
-            rightMotor.setVelocity(motorVelocity);
-            leftMotor.setVelocity(motorVelocity);
+        public double getCurrentRPM() {
+            return (getVelocity() * 60.0)
+                    / (Settings.Turret.FLYWHEEL_TICKS_PER_REV * Settings.Turret.GEAR_RATIO_MOTOR_TO_FLYWHEEL);
         }
 
         public boolean isAtSpeed() {
-            if (targetRPM < 100)
+            if (wheelTargetRPM < 100)
                 return true; // Effectively off
-            double currentRPM = (rightMotor.getVelocity() * 60.0)
-                    / (Settings.Turret.GEAR_RATIO_MOTOR_TO_FLYWHEEL * Settings.Turret.FLYWHEEL_TICKS_PER_REV);
-            return Math.abs(currentRPM - targetRPM) < 150; // 150 RPM tolerance
+            return Math.abs(getCurrentRPM() - wheelTargetRPM) < 150; // 150 RPM tolerance
         }
 
-        public double getTargetRPM() {
-            return targetRPM;
+        public double getWheelTargetRPM() {
+            return wheelTargetRPM;
+        }
+
+        public void setWheelTargetRPM(double rpm) {
+            this.wheelTargetRPM = rpm;
+            if (!active) {
+                return;
+            }
+            double motorRPM = wheelTargetRPM * (1 / Settings.Turret.GEAR_RATIO_MOTOR_TO_FLYWHEEL);
+            double motorRPS = motorRPM / 60.0;
+            double motorTPS = motorRPS * Settings.Turret.FLYWHEEL_TICKS_PER_REV;
+            rightMotor.setVelocity(motorTPS);
+            leftMotor.setVelocity(motorTPS);
+        }
+
+        public double getVelocity() {
+            return rightMotor.getVelocity();
+        }
+
+        public double getLeftVelocity() {
+            return leftMotor.getVelocity();
         }
 
         public void stop() {

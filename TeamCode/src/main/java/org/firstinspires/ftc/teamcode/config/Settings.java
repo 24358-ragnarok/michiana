@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.config;
 
+import static org.firstinspires.ftc.teamcode.config.Settings.Dimensions.LENGTH;
+import static org.firstinspires.ftc.teamcode.config.Settings.Dimensions.WIDTH;
+
 import com.bylazar.field.Style;
 import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
@@ -26,7 +29,7 @@ public class Settings {
      * General flags for controlling robot behavior.
      */
     public static class Flags {
-        public static final boolean DEBUG = true;
+        public static final boolean DEBUG = false;
 
         public static final boolean SFX = true;
     }
@@ -47,20 +50,20 @@ public class Settings {
             }
 
             public static final FollowerConstants MECANUM = common()
-                    .forwardZeroPowerAcceleration(-37.5)
-                    .lateralZeroPowerAcceleration(-65.7)
+                    .forwardZeroPowerAcceleration(-73.7)
+                    .lateralZeroPowerAcceleration(-91.8)
                     .translationalPIDFCoefficients(
-                            new PIDFCoefficients(0.13, 0.001, 0.02, 0.02))
+                            new PIDFCoefficients(0.17, 0.001, 0.02, 0.025))
                     .secondaryTranslationalPIDFCoefficients(
                             new PIDFCoefficients(0.1, 0.0001, 0.02, 0.02))
                     .headingPIDFCoefficients(
-                            new PIDFCoefficients(0.7, 0.001, 0.05, 0.03))
+                            new PIDFCoefficients(0.8, 0.001, 0.05, 0.032))
                     .secondaryHeadingPIDFCoefficients(
-                            new PIDFCoefficients(1.65, 0.001, 0.015, 0.02))
+                            new PIDFCoefficients(1.8, 0.01, 0.015, 0.025))
                     .drivePIDFCoefficients(
                             new FilteredPIDFCoefficients(0.5, 0.0, 0.01, 0.6, 0.0))
                     .secondaryDrivePIDFCoefficients(
-                            new FilteredPIDFCoefficients(0.08, 0.001, 0.001, 0.6, 0.0));
+                            new FilteredPIDFCoefficients(0.1, 0.001, 0.001, 0.6, 0.01));
         }
 
         public static class Drive {
@@ -81,7 +84,7 @@ public class Settings {
 
             public static final MecanumConstants MECANUM = common()
                     .xVelocity(73)
-                    .yVelocity(53);
+                    .yVelocity(55);
         }
 
         public static class Localizer {
@@ -105,9 +108,9 @@ public class Settings {
                     0.01,
                     0.001,
                     80,
-                    1.00,
+                    1.2,
                     10,
-                    1);
+                    0.8);
         }
     }
 
@@ -119,8 +122,6 @@ public class Settings {
         public static double HOOD_MAX_ANGLE_RAD = Math.toRadians(70.0);
         public static double HOOD_MIN_SERVO_POSITION = 0.0;
         public static double HOOD_MAX_SERVO_POSITION = 1.0;
-        // Flywheel target conversion:
-        // flywheel velocity * motor-to-flywheel ratio = motor velocity target.
         public static double GEAR_RATIO_MOTOR_TO_FLYWHEEL = (double) 2 / 3;
         public static double FLYWHEEL_TICKS_PER_REV = 28.0;
 
@@ -128,13 +129,13 @@ public class Settings {
         public static double LAUNCHER_HEIGHT_INCHES = 9.0;
         public static double GOAL_HEIGHT_INCHES = 36.0;
         public static double HOOD_ANGLE_OFFSET_RAD = 0.0;
-        public static double YAW_MIN_TICKS = 537;
-        public static double YAW_MAX_TICKS = -453;
-        public static double YAW_MIN_ANGLE_DEG = -123;
-        public static double YAW_MAX_ANGLE_DEG = 107;
+        public static double YAW_MIN_TICKS = 407;
+        public static double YAW_MAX_TICKS = -386;
+        public static double YAW_MIN_ANGLE_DEG = -90;
+        public static double YAW_MAX_ANGLE_DEG = 90;
 
-        public static double TUNG_OPEN_POSITION = 0.6;
-        public static double TUNG_CLOSED_POSITION = 0.67;
+        public static double TUNG_OPEN_POSITION = 0.527;
+        public static double TUNG_CLOSED_POSITION = 0.59;
 
         // Per-servo PIDF used by software loop for the shared yaw axle.
         public static com.qualcomm.robotcore.hardware.PIDFCoefficients YAW_PIDF = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
@@ -163,18 +164,18 @@ public class Settings {
          * Hood angle model coefficients (radians). Paste updated values from
          * SolutionTuner.
          */
-        public static double[] ANGLE_COEFFICIENTS = PolynomialShooterModels.defaultAngleCoefficients();
+        public static double[] ANGLE_COEFFICIENTS = new double[]{-0.301161, 0.036121, -0.000213};
 
         /**
          * Flywheel RPM model coefficients. Paste updated values from SolutionTuner.
          */
-        public static double[] RPM_COEFFICIENTS = PolynomialShooterModels.defaultRpmCoefficients();
+        public static double[] RPM_COEFFICIENTS = new double[]{4527.650994, -44.645306, 0.191299};
 
         public static AngleSolutionModel ANGLE_SOLUTION_MODEL = PolynomialShooterModels
-                .angleFromCoefficients(ANGLE_COEFFICIENTS);
+                .angleWithFarMax(ANGLE_COEFFICIENTS);
 
         public static RPMSolutionModel RPM_SOLUTION_MODEL = PolynomialShooterModels
-                .rpmFromCoefficients(RPM_COEFFICIENTS);
+                .rpmWithFarMax(RPM_COEFFICIENTS);
 
         public interface AngleSolutionModel {
             AngleSolution solve(double distanceInches);
@@ -230,13 +231,14 @@ public class Settings {
 
     public static class Autonomous {
         public static final double DURATION = 30;
-        public static final long LAUNCH_DURATION_MS = 1000;
+        public static final long LAUNCH_CALIBRATION_MS = 250;
+        public static final long LAUNCH_DURATION_MS = 2500;
     }
 
     public static class Positions {
         public static class Towers {
-            public static final Pose RED_GOAL = new Pose(130.0, 130.0, Math.toRadians(225));
-            public static final Pose BLUE_GOAL = new Pose(14.0, 130.0, Math.toRadians(315));
+            public static final Pose RED_GOAL = new Pose(140, 140, Math.toRadians(225));
+            public static final Pose BLUE_GOAL = new Pose(4, 140, Math.toRadians(315));
             public static final Pose OBELISK = new Pose(72.0, 150.0, Math.toRadians(0));
             public static final Pose CLASSIFIER_EXIT = new Pose(9.4, 50, Math.toRadians(97));
             public static final Pose CLOSE_SCAN = new Pose(60, 100.0, Math.toRadians(80));
@@ -244,18 +246,19 @@ public class Settings {
         }
 
         public static class TeleOp {
-            public static final Pose CLOSE_SHOOT = new Pose(54.92, 86.55, Math.toRadians(130.6));
-            public static final Pose CLOSE_SHOOT_AUTO = new Pose(58, 81, Math.toRadians(130.0));
+            public static final Pose CLOSE_SHOOT = new Pose(54.92, 95, Math.toRadians(130.6));
+            public static final Pose CLOSE_SHOOT_AUTO = new Pose(58, 90, Math.toRadians(130.0));
             public static final Pose FAR_SHOOT = new Pose(60, 18, Math.toRadians(112.75));
             public static final Pose FAR_SHOOT_AUTO = new Pose(55, 18, Math.toRadians(111));
             public static final Pose HUMAN_PLAYER = new Pose(30, 30, Math.toRadians(225));
             public static final Pose GATE = new Pose(12.44, 62, Math.toRadians(150));
             public static final Pose PARK = new Pose(106, 32, Math.toRadians(180));
+            public static final Pose RESET = new Pose(144 - WIDTH / 2, 0 + LENGTH / 2, Math.toRadians(90));
         }
 
         public static class BotPoses {
             public static final Pose START_FAR = new Pose(56.26, 9.0, Math.toRadians(90));
-            public static final Pose START_CLOSE = new Pose(21.89, 123.24, Math.toRadians(55));
+            public static final Pose START_CLOSE = new Pose(25.8, 132.4, Math.toRadians(55));
         }
 
         public static class Samples {
@@ -279,7 +282,7 @@ public class Settings {
 
             public static class Preset3 {
                 public static final Pose PREP = new Pose(44, 84.6, Math.toRadians(180));
-                public static final Pose END = new Pose(20, 84.6, Math.toRadians(180));
+                public static final Pose END = new Pose(25, 84.6, Math.toRadians(180));
             }
 
             public static class HumanPlayerPreset {
@@ -309,14 +312,6 @@ public class Settings {
             public static final Pose FAR = new Pose(53, 21.5, Math.toRadians(135));
             public static final Pose CLOSE = new Pose(58.1, 101.7, Math.toRadians(145));
             public static final Pose CLOSE_SAFE_PARK_POSE = new Pose(48, 130, Math.toRadians(90));
-        }
-
-        public static class TeleopPresets {
-            public static final Pose CLOSE_SHOOT = TeleOp.CLOSE_SHOOT;
-            public static final Pose FAR_SHOOT = TeleOp.FAR_SHOOT;
-            public static final Pose HUMAN_PLAYER = TeleOp.HUMAN_PLAYER;
-            public static final Pose GATE = TeleOp.GATE;
-            public static final Pose PARK = TeleOp.PARK;
         }
     }
 

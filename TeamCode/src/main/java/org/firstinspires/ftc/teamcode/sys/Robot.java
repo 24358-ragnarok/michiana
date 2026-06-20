@@ -98,7 +98,7 @@ public class Robot {
         peripherals.update();
         dt.update();
         turret.update(dt.follower.getPose(), dt.follower.getVelocity());
-        log.update(dt.follower.getPose());
+        log.update(dt.follower);
 
         log.setItem("<b>Status</b>", turret.isReady() ? "<font color='#00FF00'>READY TO FIRE</font>" : "<font color='#FF0000'>PREPARING</font>");
         log.setItem("Intake", botVelocityToColorString(dt.follower.getVelocity())); // Just an example

@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.util.telemetry.Wizard;
  * configuration wizard. It uses the {@link org.firstinspires.ftc.teamcode.autonomous.AutonomousSequence}
  * system to run actions.
  */
-@Autonomous(name = "Revenge of the Boonstra", preselectTeleOp = "Goatpak Strikes Back")
+@Autonomous(name = "GRANT I LOVE YOU GRANT EVERYONE PRAISE GRANT", preselectTeleOp = "dreaming of deepak tn")
 public class _Auto extends OpMode {
     /**
      * The robot hardware interface.
@@ -46,7 +46,7 @@ public class _Auto extends OpMode {
         bot = new Robot(hardwareMap, telemetry, gamepad1, gamepad2);
         wizard = new Wizard(bot);
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
-
+        bot.turret.getTung().close();
     }
 
     /**
@@ -54,8 +54,13 @@ public class _Auto extends OpMode {
      */
     @Override
     public void init_loop() {
-        bot.log.drawRobot(MatchState.getStartsFar() ?
-                Settings.Positions.BotPoses.START_FAR : Settings.Positions.BotPoses.START_CLOSE);
+        if (MatchState.isBlue) {
+            bot.log.drawRobot(MatchState.getStartsFar() ?
+                    Settings.Positions.BotPoses.START_FAR : Settings.Positions.BotPoses.START_CLOSE);
+        } else {
+            bot.log.drawRobot(MatchState.getStartsFar() ?
+                    Settings.Positions.BotPoses.START_FAR.mirror() : Settings.Positions.BotPoses.START_CLOSE.mirror());
+        }
         wizard.refresh();
         bot.log.update();
     }
@@ -65,8 +70,13 @@ public class _Auto extends OpMode {
      */
     @Override
     public void start() {
-        bot.dt.follower.setStartingPose(MatchState.getStartsFar() ?
-                Settings.Positions.BotPoses.START_FAR : Settings.Positions.BotPoses.START_CLOSE);
+        if (MatchState.isBlue) {
+            bot.dt.follower.setStartingPose(MatchState.getStartsFar() ?
+                    Settings.Positions.BotPoses.START_FAR : Settings.Positions.BotPoses.START_CLOSE);
+        } else {
+            bot.dt.follower.setStartingPose(MatchState.getStartsFar() ?
+                    Settings.Positions.BotPoses.START_FAR.mirror() : Settings.Positions.BotPoses.START_CLOSE.mirror());
+        }
         bot.start(time);
 
         AutonomousRuntime runtime = MatchState.getAutonomousRuntime();

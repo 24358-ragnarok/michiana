@@ -15,20 +15,20 @@ public class LaunchAction implements AutonomousAction {
     @Override
     public void initialize(Robot bot) {
         timer = new Timer();
-        bot.turret.getTung().open();
-        bot.intake.in();
         timer.resetTimer();
     }
 
     @Override
     public boolean execute(Robot bot) {
+        if (timer.getElapsedTime() > Settings.Autonomous.LAUNCH_CALIBRATION_MS) {
+            bot.turret.getTung().open();
+        }
         return timer.getElapsedTime() > Settings.Autonomous.LAUNCH_DURATION_MS;
     }
 
     @Override
     public void end(Robot bot, boolean interrupted) {
         bot.turret.getTung().close();
-        bot.intake.stop();
     }
 
     @Override

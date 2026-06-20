@@ -17,7 +17,7 @@ public class MatchState {
     public static boolean isBlue = true;
     public static boolean startsFar = true;
     public static Pose storedPose = new Pose();
-    private static AutonomousRuntime runtime = AutonomousRuntime.DEFAULT;
+    private static AutonomousRuntime runtime = AutonomousRuntime.CLASSIC_12_BALL;
 
     /**
      * Resets the match state to default values.
@@ -28,7 +28,7 @@ public class MatchState {
         // Reset configuration to sane defaults before each auto
         isBlue = true;
         startsFar = true;
-        runtime = AutonomousRuntime.DEFAULT;
+        runtime = AutonomousRuntime.CLASSIC_12_BALL;
     }
 
     public static AutonomousRuntime getAutonomousRuntime() {

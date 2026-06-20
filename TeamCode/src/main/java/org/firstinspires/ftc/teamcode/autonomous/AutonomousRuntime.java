@@ -16,40 +16,28 @@ import org.firstinspires.ftc.teamcode.util.telemetry.Wizard;
  * starting position.
  */
 public enum AutonomousRuntime {
-    DEFAULT("I have yet to make an autonomous mode.") {
-        @Override
-        public AutonomousSequence buildFarSequence() {
-            return new SequenceBuilder()
-                    .build();
-        }
-
-        @Override
-        public AutonomousSequence buildCloseSequence() {
-            return new SequenceBuilder()
-                    .build();
-        }
-    },
     CLASSIC_12_BALL("Classic 12 Ball") {
         @Override
         public AutonomousSequence buildFarSequence() {
             return new SequenceBuilder()
                     // Preload
+                    .startIntake()
                     .moveTo(Settings.Positions.TeleOp.FAR_SHOOT_AUTO, "Launch Preload")
+                    .wait(2.2)
                     .launch()
                     // Set 1
                     .moveSplineTo(Settings.Positions.Samples.Preset1.END, "Grab Set 1",
                             Settings.Positions.ControlPoints.PRESET_1_APPROACH_FAR)
-                    .withIntake()
                     .moveCurveToVia(Settings.Positions.TeleOp.FAR_SHOOT_AUTO,
                             Settings.Positions.ControlPoints.PRESET_1_END_TO_FAR_SHOOT, "Return Set 1")
                     .launch()
                     // Set 2
                     .moveSplineTo(Settings.Positions.Samples.Preset2.END, "Grab Set 2",
                             Settings.Positions.ControlPoints.PRESET_2_APPROACH_FAR)
-                    .withIntake()
                     .moveTo(Settings.Positions.TeleOp.FAR_SHOOT_AUTO, "Return Set 2")
                     .launch()
                     // Park
+                    .stopIntake()
                     .moveTo(Settings.Positions.Park.FAR, "Park")
                     .endAt(Settings.Positions.Park.FAR)
                     .build();
@@ -59,25 +47,31 @@ public enum AutonomousRuntime {
         public AutonomousSequence buildCloseSequence() {
             return new SequenceBuilder()
                     // Preload
+                    .startIntake()
                     .moveTo(Settings.Positions.TeleOp.CLOSE_SHOOT_AUTO, "Launch Preload")
+                    .wait(2.2)
                     .launch()
                     // Preset 2
-                    .moveCurveToVia(Settings.Positions.Samples.Preset2.END_AND_EMPTY_GATE,
+                    .moveCurveToVia(Settings.Positions.Samples.Preset3.END,
+                            Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET3_END, "Grab Preset 3")
+                    .moveCurveToVia(Settings.Positions.TeleOp.CLOSE_SHOOT_AUTO,
+                            Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET3_END, "Return Preset 3")
+                    .launch()
+                    .moveCurveToVia(Settings.Positions.Samples.Preset2.END,
                             Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET2_END, "Grab Preset 2")
-                    .withIntake()
                     .moveCurveToVia(Settings.Positions.TeleOp.CLOSE_SHOOT_AUTO,
                             Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET2_END, "Return Preset 2")
                     .launch()
                     // Loop the "Eat" logic until 6 seconds remain
-                    .loopUntilSecondsLeft(6, loop -> loop
-                            .moveCurveToVia(Settings.Positions.Samples.GateAndEating.EMPTY_GATE,
-                                    Settings.Positions.ControlPoints.EMPTY_GATE_APPROACH, "Collect")
-                            .withIntake()
-                            .wait(0.5)
-                            .moveCurveToVia(Settings.Positions.TeleOp.CLOSE_SHOOT_AUTO,
-                                    Settings.Positions.ControlPoints.EMPTY_GATE_APPROACH, "Return")
-                            .launch())
+//                    .loopUntilSecondsLeft(6, loop -> loop
+//                            .moveCurveToVia(Settings.Positions.Samples.GateAndEating.EMPTY_GATE,
+//                                    Settings.Positions.ControlPoints.EMPTY_GATE_APPROACH, "Collect")
+//                            .wait(0.5)
+//                            .moveCurveToVia(Settings.Positions.TeleOp.CLOSE_SHOOT_AUTO,
+//                                    Settings.Positions.ControlPoints.EMPTY_GATE_APPROACH, "Return")
+//                            .launch())
                     // Park
+                    .stopIntake()
                     .moveTo(Settings.Positions.Park.CLOSE, "Park")
                     .endAt(Settings.Positions.Park.CLOSE)
                     .build();

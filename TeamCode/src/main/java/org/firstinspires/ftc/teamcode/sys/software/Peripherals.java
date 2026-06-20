@@ -81,7 +81,7 @@ public class Peripherals {
             default:
                 int targetLength = Math.max(1, maxPatternLength);
 
-                int totalCycleTimeMs = 500;
+                int totalCycleTimeMs = 100;
                 int stepDuration = totalCycleTimeMs / targetLength;
 
                 for (int i = 0; i < targetLength; i++) {
