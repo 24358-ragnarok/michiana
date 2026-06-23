@@ -24,7 +24,7 @@ public final class PolynomialShooterModels {
         return distanceInches -> {
             double angleRadians = PolynomialRegression.evaluate(coeffs, distanceInches);
             if (distanceInches > 60) {
-                angleRadians = 1.04;
+                angleRadians = 1.0472;
             }
             return new Settings.Turret.AngleSolution(angleRadians);
         };
@@ -43,7 +43,7 @@ public final class PolynomialShooterModels {
         return distanceInches -> {
             double rpm = PolynomialRegression.evaluate(coeffs, distanceInches);
             if (distanceInches > 60) {
-                rpm = 6000;
+                rpm = 5300;
             }
             return new Settings.Turret.RPMSolution(rpm);
         };

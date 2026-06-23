@@ -126,8 +126,8 @@ public class Turret {
 
     public class Yaw {
         private final DcMotorEx motor;
-        public double offset = 0;
         private boolean enabled = true;
+        public double offset = 0;
 
         public Yaw(HardwareMap hardwareMap) {
             this.motor = hardwareMap.get(DcMotorEx.class, Settings.Hardware.YAW);
@@ -221,8 +221,8 @@ public class Turret {
     public class Flywheel {
         private final DcMotorEx rightMotor;
         private final DcMotorEx leftMotor;
-        public double offset = 0;
         private double wheelTargetRPM;
+        public double offset = 0;
         public boolean active = true;
 
         public Flywheel(HardwareMap hardwareMap) {
@@ -245,6 +245,18 @@ public class Turret {
             setWheelTargetRPM(solution.flywheelRpm + offset);
         }
 
+        public void setWheelTargetRPM(double rpm) {
+            this.wheelTargetRPM = rpm;
+            if (!active) {
+                return;
+            }
+            double motorRPM = wheelTargetRPM * (1 / Settings.Turret.GEAR_RATIO_MOTOR_TO_FLYWHEEL);
+            double motorRPS = motorRPM / 60.0;
+            double motorTPS = motorRPS * Settings.Turret.FLYWHEEL_TICKS_PER_REV;
+            rightMotor.setVelocity(motorTPS);
+            leftMotor.setVelocity(motorTPS);
+        }
+
         public double getCurrentRPM() {
             return (getVelocity() * 60.0)
                     / (Settings.Turret.FLYWHEEL_TICKS_PER_REV * Settings.Turret.GEAR_RATIO_MOTOR_TO_FLYWHEEL);
@@ -258,18 +270,6 @@ public class Turret {
 
         public double getWheelTargetRPM() {
             return wheelTargetRPM;
-        }
-
-        public void setWheelTargetRPM(double rpm) {
-            this.wheelTargetRPM = rpm;
-            if (!active) {
-                return;
-            }
-            double motorRPM = wheelTargetRPM * (1 / Settings.Turret.GEAR_RATIO_MOTOR_TO_FLYWHEEL);
-            double motorRPS = motorRPM / 60.0;
-            double motorTPS = motorRPS * Settings.Turret.FLYWHEEL_TICKS_PER_REV;
-            rightMotor.setVelocity(motorTPS);
-            leftMotor.setVelocity(motorTPS);
         }
 
         public double getVelocity() {

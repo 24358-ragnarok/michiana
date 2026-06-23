@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.bylazar.configurables.annotations.IgnoreConfigurable;
+import com.bylazar.field.Style;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -50,8 +51,7 @@ public class _Driver extends OpMode {
      */
     @Override
     public void start() {
-        bot.dt.follower.setStartingPose(MatchState.getStartsFar() ?
-                Settings.Positions.BotPoses.START_FAR : Settings.Positions.BotPoses.START_CLOSE);
+        bot.dt.follower.setStartingPose(MatchState.storedPose);
         bot.start(time);
     }
 
@@ -71,7 +71,11 @@ public class _Driver extends OpMode {
                 -bot.ctrl.main.right_stick_x + ((bot.ctrl.main.left_trigger - bot.ctrl.main.right_trigger) / 5)
         );
         if (bot.ctrl.main.psWasPressed()) {
-            bot.dt.follower.setPose(Settings.Positions.TeleOp.RESET);
+            if (MatchState.isBlue) {
+                bot.dt.follower.setPose(Settings.Positions.TeleOp.RESET);
+            } else {
+                bot.dt.follower.setPose(Settings.Positions.TeleOp.RESET.mirror());
+            }
         }
         if (bot.ctrl.main.leftBumperWasPressed()) {
             bot.turret.getYaw().offset += Math.toRadians(2);
@@ -86,10 +90,10 @@ public class _Driver extends OpMode {
             bot.turret.getHood().offset -= Math.toRadians(2);
         }
         if (bot.ctrl.sub.dpadLeftWasPressed()) {
-            bot.turret.getFlywheel().offset += 50;
+            bot.turret.getFlywheel().offset -= 50;
         }
         if (bot.ctrl.sub.dpadRightWasPressed()) {
-            bot.turret.getFlywheel().offset -= 50;
+            bot.turret.getFlywheel().offset += 50;
         }
         if (bot.ctrl.main.optionsWasPressed()) {
             bot.turret.getYaw().toggle();
@@ -111,6 +115,11 @@ public class _Driver extends OpMode {
             bot.turret.getFlywheel().offset = 0;
             bot.turret.getHood().offset = 0;
         }
+        bot.log.addData("flyw offset", bot.turret.getFlywheel().offset);
+        bot.log.addData("rpm", bot.turret.getFlywheel().getCurrentRPM());
+        bot.log.addData("yaw offset", bot.turret.getYaw().offset);
+        Drawing.drawRobot(MatchState.isBlue ? Settings.Positions.Towers.BLUE_GOAL : Settings.Positions.Towers.RED_GOAL, new Style("#5FD700", "#5FD700", 1));
+
     }
 
     /**

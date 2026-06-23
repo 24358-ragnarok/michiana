@@ -129,13 +129,13 @@ public class Settings {
         public static double LAUNCHER_HEIGHT_INCHES = 9.0;
         public static double GOAL_HEIGHT_INCHES = 36.0;
         public static double HOOD_ANGLE_OFFSET_RAD = 0.0;
-        public static double YAW_MIN_TICKS = 407;
-        public static double YAW_MAX_TICKS = -386;
+        public static double YAW_MIN_TICKS = 378;
+        public static double YAW_MAX_TICKS = -387;
         public static double YAW_MIN_ANGLE_DEG = -90;
         public static double YAW_MAX_ANGLE_DEG = 90;
 
-        public static double TUNG_OPEN_POSITION = 0.527;
-        public static double TUNG_CLOSED_POSITION = 0.59;
+        public static double TUNG_OPEN_POSITION = 0.60;
+        public static double TUNG_CLOSED_POSITION = 0.69;
 
         // Per-servo PIDF used by software loop for the shared yaw axle.
         public static com.qualcomm.robotcore.hardware.PIDFCoefficients YAW_PIDF = new com.qualcomm.robotcore.hardware.PIDFCoefficients(
@@ -164,12 +164,12 @@ public class Settings {
          * Hood angle model coefficients (radians). Paste updated values from
          * SolutionTuner.
          */
-        public static double[] ANGLE_COEFFICIENTS = new double[]{-0.301161, 0.036121, -0.000213};
+        public static double[] ANGLE_COEFFICIENTS = new double[]{-0.447765, 0.041895, 0};
 
         /**
          * Flywheel RPM model coefficients. Paste updated values from SolutionTuner.
          */
-        public static double[] RPM_COEFFICIENTS = new double[]{4527.650994, -44.645306, 0.191299};
+        public static double[] RPM_COEFFICIENTS = new double[]{6765.143128, -113.187394, 0.691165};
 
         public static AngleSolutionModel ANGLE_SOLUTION_MODEL = PolynomialShooterModels
                 .angleWithFarMax(ANGLE_COEFFICIENTS);
@@ -258,13 +258,13 @@ public class Settings {
 
         public static class BotPoses {
             public static final Pose START_FAR = new Pose(56.26, 9.0, Math.toRadians(90));
-            public static final Pose START_CLOSE = new Pose(25.8, 132.4, Math.toRadians(55));
+            public static final Pose START_CLOSE = new Pose(22, 131, Math.toRadians(42.6142152645));
         }
 
         public static class Samples {
             public static class GateAndEating {
                 public static final Pose EAT_FROM_EMPTY_DIRECTLY = new Pose(32, 16);
-                public static final Pose EMPTY_GATE = new Pose(12, 60.6, Math.toRadians(147));
+                public static final Pose EMPTY_GATE = new Pose(15, 60.6, Math.toRadians(147));
                 public static final Pose EMPTY_GATE_MOVE_BACK = new Pose(12, 55.6, Math.toRadians(147));
             }
 

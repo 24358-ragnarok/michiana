@@ -75,13 +75,13 @@ public class Robot {
      * @param gamepad2    The second gamepad.
      */
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
-            log = new Logging(telemetry);
-            ctrl = new Controller(gamepad1, gamepad2);
-            dt = new Drivetrain(hardwareMap);
+        log = new Logging(telemetry);
+        ctrl = new Controller(gamepad1, gamepad2);
+        dt = new Drivetrain(hardwareMap);
         turret = new Turret(hardwareMap);
-            intake = new Intake(hardwareMap);
-            peripherals = new Peripherals(hardwareMap, telemetry);
-            log.finishSetup();
+        intake = new Intake(hardwareMap);
+        peripherals = new Peripherals(hardwareMap, telemetry);
+        log.finishSetup();
     }
 
     /**
@@ -115,9 +115,9 @@ public class Robot {
     public void start(double time) {
         this.startTime = time;
         dt.start();
-        turret.start();
         Turret.setTargetPose(
                 MatchState.isBlue ? Settings.Positions.Towers.BLUE_GOAL : Settings.Positions.Towers.RED_GOAL);
+        turret.start();
         intake.start();
     }
 

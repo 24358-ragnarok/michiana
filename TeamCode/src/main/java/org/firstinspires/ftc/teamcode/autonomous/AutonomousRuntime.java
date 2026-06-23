@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import static org.firstinspires.ftc.teamcode.config.Settings.Positions.TeleOp.CLOSE_SHOOT_AUTO;
+
 import org.firstinspires.ftc.teamcode.config.Settings;
 import org.firstinspires.ftc.teamcode.util.telemetry.Wizard;
 
@@ -48,18 +50,18 @@ public enum AutonomousRuntime {
             return new SequenceBuilder()
                     // Preload
                     .startIntake()
-                    .moveTo(Settings.Positions.TeleOp.CLOSE_SHOOT_AUTO, "Launch Preload")
+                    .moveTo(CLOSE_SHOOT_AUTO, "Launch Preload")
                     .wait(2.2)
                     .launch()
                     // Preset 2
                     .moveCurveToVia(Settings.Positions.Samples.Preset3.END,
                             Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET3_END, "Grab Preset 3")
-                    .moveCurveToVia(Settings.Positions.TeleOp.CLOSE_SHOOT_AUTO,
+                    .moveCurveToVia(CLOSE_SHOOT_AUTO,
                             Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET3_END, "Return Preset 3")
                     .launch()
                     .moveCurveToVia(Settings.Positions.Samples.Preset2.END,
                             Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET2_END, "Grab Preset 2")
-                    .moveCurveToVia(Settings.Positions.TeleOp.CLOSE_SHOOT_AUTO,
+                    .moveCurveToVia(CLOSE_SHOOT_AUTO,
                             Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET2_END, "Return Preset 2")
                     .launch()
                     // Loop the "Eat" logic until 6 seconds remain
@@ -71,6 +73,100 @@ public enum AutonomousRuntime {
 //                                    Settings.Positions.ControlPoints.EMPTY_GATE_APPROACH, "Return")
 //                            .launch())
                     // Park
+                    .stopIntake()
+                    .moveTo(Settings.Positions.Park.CLOSE, "Park")
+                    .endAt(Settings.Positions.Park.CLOSE)
+                    .build();
+        }
+    },
+    CRE8("CRE8 // 6BALL FAR") {
+        @Override
+        public AutonomousSequence buildFarSequence() {
+            return new SequenceBuilder()
+                    // Preload
+                    .startIntake()
+                    .moveTo(Settings.Positions.TeleOp.FAR_SHOOT_AUTO, "Launch Preload")
+                    .wait(2.2)
+                    .launch()
+                    // Set 1
+                    .moveSplineTo(Settings.Positions.Samples.Preset1.END, "Grab Set 1",
+                            Settings.Positions.ControlPoints.PRESET_1_APPROACH_FAR)
+                    .moveCurveToVia(Settings.Positions.TeleOp.FAR_SHOOT_AUTO,
+                            Settings.Positions.ControlPoints.PRESET_1_END_TO_FAR_SHOOT, "Return Set 1")
+                    .launch()
+                    .stopIntake()
+                    .moveTo(Settings.Positions.Park.FAR, "Park")
+                    .endAt(Settings.Positions.Park.FAR)
+                    .build();
+        }
+
+        @Override
+        public AutonomousSequence buildCloseSequence() {
+            return new SequenceBuilder()
+                    // Preload
+                    .startIntake()
+                    .moveTo(CLOSE_SHOOT_AUTO, "Launch Preload")
+                    .wait(2.2)
+                    .launch()
+                    // Preset 3
+                    .moveCurveToVia(Settings.Positions.Samples.Preset3.END,
+                            Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET3_END, "Grab Preset 3")
+                    .moveCurveToVia(CLOSE_SHOOT_AUTO,
+                            Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET3_END, "Return Preset 3")
+                    .launch()
+                    .stopIntake()
+                    .moveTo(Settings.Positions.Park.CLOSE, "Park")
+                    .endAt(Settings.Positions.Park.CLOSE)
+                    .build();
+        }
+    },
+    PLANTECH("PLANTECH") {
+        @Override
+        public AutonomousSequence buildFarSequence() {
+            return new SequenceBuilder()
+                    // Preload
+                    .startIntake()
+                    .moveTo(Settings.Positions.TeleOp.FAR_SHOOT_AUTO, "Launch Preload")
+                    .wait(2.2)
+                    .launch()
+                    // Set 1
+                    .moveSplineTo(Settings.Positions.Samples.Preset1.END, "Grab Set 1",
+                            Settings.Positions.ControlPoints.PRESET_1_APPROACH_FAR)
+                    .moveCurveToVia(Settings.Positions.TeleOp.FAR_SHOOT_AUTO,
+                            Settings.Positions.ControlPoints.PRESET_1_END_TO_FAR_SHOOT, "Return Set 1")
+                    .launch()
+                    .stopIntake()
+                    .moveTo(Settings.Positions.Park.FAR, "Park")
+                    .endAt(Settings.Positions.Park.FAR)
+                    .build();
+        }
+
+        @Override
+        public AutonomousSequence buildCloseSequence() {
+            return new SequenceBuilder()
+                    // Preload
+                    .startIntake()
+                    .moveTo(CLOSE_SHOOT_AUTO, "Launch Preload")
+                    .wait(2.2)
+                    .launch()
+
+                    .moveCurveToVia(Settings.Positions.Samples.Preset2.END,
+                            Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET2_END, "Grab Preset 2")
+                    .moveCurveToVia(CLOSE_SHOOT_AUTO,
+                            Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET2_END, "Return Preset 2")
+                    .launch()
+
+                    .moveCurveToVia(Settings.Positions.Samples.GateAndEating.EMPTY_GATE,
+                            Settings.Positions.ControlPoints.EMPTY_GATE_APPROACH, "Collect")
+                    .wait(0.5)
+                    .moveTo(CLOSE_SHOOT_AUTO, "back")
+
+                    // Preset 3
+                    .moveCurveToVia(Settings.Positions.Samples.Preset3.END,
+                            Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET3_END, "Grab Preset 3")
+                    .moveCurveToVia(CLOSE_SHOOT_AUTO,
+                            Settings.Positions.ControlPoints.FROM_CLOSE_SHOOT_TO_PRESET3_END, "Return Preset 3")
+                    .launch()
                     .stopIntake()
                     .moveTo(Settings.Positions.Park.CLOSE, "Park")
                     .endAt(Settings.Positions.Park.CLOSE)
